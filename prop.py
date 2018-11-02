@@ -226,7 +226,7 @@ def main():
 	
 	#plot network computed result
 	output = np.append(inputdata,output, axis=1)
-	print("Network computed output")
+	print("Network computed output: ")
 	
 	plt.figure(4)
 	if dim ==1:
