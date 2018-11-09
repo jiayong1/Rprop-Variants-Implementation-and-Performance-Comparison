@@ -99,6 +99,7 @@ class net:
                 error = np.multiply(np.dot(errorlist[-j], tempW), ReluD(zlist[-j - 1]))
                 errorlist = [error] + errorlist
             
+            ########################## iRrop+ algorithm begin ##########################
             #update W and b in Rprop algorithm
             npos, nneg = 1.2, 0.5
             dmax, dmin = 50.0, 0.000001
@@ -143,6 +144,7 @@ class net:
                 self.wb[k][-1, :] = self.wb[k][-1, :] - self.ss * np.mean(errorlist[k], axis=0) / self.size
                 
                 prevgrad[k] = grad[k]
+            ########################## iRrop+ algorithm end ##########################
         
         #plot the Loss
         plt.figure(3)

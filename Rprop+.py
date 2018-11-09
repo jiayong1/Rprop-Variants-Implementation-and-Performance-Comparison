@@ -99,6 +99,8 @@ class net:
                 error = np.multiply(np.dot(errorlist[-j], tempW), ReluD(zlist[-j - 1]))
                 errorlist = [error] + errorlist
             
+
+            ########################## Rrop+ algorithm begin ##########################
             #update W and b in Rprop algorithm
             npos, nneg = 1.2, 0.5
             dmax, dmin = 50.0, 0.000001
@@ -131,7 +133,7 @@ class net:
                 ## prev_grad * grad < 0 ##
                 d[k][lt_index] = np.maximum(d[k][lt_index] * nneg, dmin)
                 grad[k][lt_index] = 0
-                
+
                 ## prev_grad * grad == 0 ##
                 dw[k][eq_index] = d[k][eq_index] * np.sign(grad[k][eq_index])
                 
@@ -139,6 +141,7 @@ class net:
                 self.wb[k][-1, :] = self.wb[k][-1, :] - self.ss * np.mean(errorlist[k], axis=0) / self.size
                 
                 prevgrad[k] = grad[k]
+            ########################## Rrop+ algorithm end ##########################
         
         #plot the Loss
         plt.figure(3)
