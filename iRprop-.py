@@ -137,7 +137,7 @@ class net:
                 self.wb[k][-1, :] = self.wb[k][-1, :] - self.ss * np.mean(errorlist[k], axis=0) / self.size
                 
                 prevgrad[k] = grad[k]
-            ########################## iRrop- algorithm begin ##########################
+            ########################## iRrop- algorithm end ##########################
         
         #plot the Loss
         plt.figure(3)
