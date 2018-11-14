@@ -17,6 +17,7 @@ class net:
         self.iter = numofiter
         self.dim = dim
         self.nd = len(hiddenlayerlist[0])
+
         self.loss = []
         self.hiddenunits = hiddenlayerlist
         
@@ -132,9 +133,13 @@ class net:
                 ## prev_grad * grad < 0 ##
                 d[k][lt_index] = np.maximum(d[k][lt_index] * nneg, dmin)
                 grad[k][lt_index] = 0
-                if self.loss[-1] > self.loss[-2]:
-                    dw[k][lt_index] = -dw[k][lt_index]
-                else:
+                # print(self.loss)
+                try:
+                    if self.loss[-1] > self.loss[-2]:
+                        dw[k][lt_index] = -dw[k][lt_index]
+                    else:
+                        dw[k][lt_index] = 0
+                except:
                     dw[k][lt_index] = 0
 
                 ## prev_grad * grad == 0 ##
