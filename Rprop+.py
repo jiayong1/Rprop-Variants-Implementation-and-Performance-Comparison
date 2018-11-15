@@ -2,14 +2,16 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import math
-#%matplotlib inline
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+%matplotlib inline
 
 from pdb import set_trace
 
 random.seed(0)
 
 class net:
-    def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist):
+    def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype):
         self.input = inputdata
         self.output = outputdata
         self.size = size
@@ -17,6 +19,8 @@ class net:
         self.iter = numofiter
         self.dim = dim
         self.nd = len(hiddenlayerlist[0])
+        self.modeltype = modeltype
+
         self.loss = []
         self.hiddenunits = hiddenlayerlist
         
@@ -46,10 +50,12 @@ class net:
         
         a = np.append(a, ones, axis=1)
         z = np.dot(a, self.wb[-1])
-        a = sigmoid(z)
-        
-        a[a > 0.5] = 1
-        a[a <= 0.5] = 0
+        if self.modeltype == "c":
+            a = sigmoid(z)
+            a[a > 0.5] = 1
+            a[a <= 0.5] = 0
+        else:
+            a = z
         
         return a
         
@@ -80,18 +86,22 @@ class net:
             z = np.dot(a, self.wb[-1])
             
             zlist.append(z)
-            a = sigmoid(z)
-            a = checkzero(a)
-            alist.append(a)
             
-            #modified loss
-            self.loss.append((-1) * np.mean(((1 - self.output) * np.log(1 - alist[-1])) + self.output * np.log(alist[-1])))
+            if self.modeltype == "c":
+                a = sigmoid(z)
+                a = checkzero(a)
+                alist.append(a)
+                #modified loss(classification)
+                self.loss.append((-1) * np.mean(((1 - self.output) * np.log(1 - alist[-1])) + self.output * np.log(alist[-1])))
+                outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * sigmoidD(zlist[-1])
+            else:
+                #loss(Regression)
+                alist.append(a)
+                self.loss.append( np.mean(0.5 * np.square(self.output - zlist[-1]), axis=0))
+                outputerror = (zlist[-1] - self.output)
+            
             
             #backward
-            
-            #modified error
-            outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * sigmoidD(zlist[-1])
-            
             errorlist = [outputerror]
             for j in range(1, self.nd + 1):
                 
@@ -99,7 +109,6 @@ class net:
                 error = np.multiply(np.dot(errorlist[-j], tempW), ReluD(zlist[-j - 1]))
                 errorlist = [error] + errorlist
             
-
             ########################## Rrop+ algorithm begin ##########################
             #update W and b in Rprop algorithm
             npos, nneg = 1.2, 0.5
@@ -186,16 +195,6 @@ def generatedata(size, dim, margin):
             y = np.vstack((ones, zeros))
         
         elif dim == 2:
-#           s1 = np.random.rand(size//2,1)* 2 -1
-#           s2 = np.random.rand(size//2,1)* 2 -1
-#           x1 = np.random.rand(size,1)*4 -2
-#           coff = np.random.rand(1,1)*4 -2
-#           b = np.reshape(np.random.random(1)*4 - 2, (1,1))
-#           x2 = np.dot(x1,coff)+ np.asscalar(b) + np.vstack((s1,s2))
-#           x = np.append(x1,x2,axis=1)
-#           s1.fill(1)
-#           s2.fill(0)
-#           y = np.vstack((s1,s2))
             x1 = np.random.rand(size, 1) * 8 - 4
             s1 = np.random.rand(size // 2, 1) * 2
             s2 = np.random.rand(size // 2, 1) * (-2)
@@ -206,6 +205,28 @@ def generatedata(size, dim, margin):
             y = np.vstack((s1, s2))
     
     return x, y
+
+def generatedataForRegression(size,dim):
+    if dim == 1:
+        x =np.reshape(np.linspace(-math.pi, math.pi, num=size), (size, dim))
+    else:
+        #x = np.random.rand(size,dim)*10 -5
+        X = np.arange(-5, 5, 0.2)
+        Y = np.arange(-5, 5, 0.2)
+        X, Y = np.meshgrid(X, Y)
+        a = X.flatten()
+        b = Y.flatten()
+        x = np.append(np.reshape(a,(len(a),1)), np.reshape(b,(len(b),1)), axis=1)
+        size = 2500
+    
+    y = np.reshape(np.sum(np.sin(x), axis=1), (size,1))
+    fig = plt.figure(figsize=(10,10))
+    ax = plt.axes(projection='3d')
+    out = np.reshape(y, np.shape(X))
+    ax.plot_surface(X, Y, out,rstride=1, cstride=1,cmap=cm.coolwarm, linewidth=0, antialiased=False)
+    return x, y 
+
+
 
 
 def ReluD(x):
@@ -228,56 +249,80 @@ def sigmoidD(x):
 
 def main():
     #set hyperparameter at here 
-    hiddenlayerlist = [[18, 20, 25, 16, 15]]    #change the number of hidden layer, and nodes in the layer
+    hiddenlayerlist = [[16,32,16]]    #change the number of hidden layer, and nodes in the layer
     
     ss = 1e-4           #step Size
-    numofiter = 20000   #iterations
-    size = 200          #input size
+    numofiter = 100000   #iterations
+    size = 2500          #input size
     dim = 2             #input dimension
     margin = 0          #change Margin at here, change this value to 0 to make the data not linear separable
     
-    #generate the input and output
-    inputdata, outputdata = generatedata(size, dim, margin)
+    modeltype = input("Classification or Regression?(input 'c' or 'r')")
     
-    #plot to viaualize if it is 1D
-    print("Training Data Plot: ")
-    plt.figure(1)
-    if dim == 1:
+    
+    if modeltype == "c":
         
-        plt.scatter(inputdata[: size // 2, 0],np.ones((size // 2, 1)), color="r")
-        plt.scatter(inputdata[size // 2 :, 0],np.ones((size // 2, 1)), color="b")
-        plt.legend(['Label 1', 'Label 0'], loc='upper right')
-    elif dim == 2:
+        #generate the input and output for classification
+        inputdata, outputdata = generatedata(size, dim, margin)
+
+        #plot to viaualize if it is 1D
+        print("Training Data Plot: ")
+        plt.figure(1)
+        if dim == 1:
+            
+            plt.scatter(inputdata[: size // 2, 0],np.ones((size // 2, 1)), color="r")
+            plt.scatter(inputdata[size // 2 :, 0],np.ones((size // 2, 1)), color="b")
+            plt.legend(['Label 1', 'Label 0'], loc='upper right')
+        elif dim == 2:
         
-        plt.scatter(inputdata[: size // 2, 0],inputdata[: size // 2, 1], color="r")
-        plt.scatter(inputdata[size // 2 :, 0],inputdata[size // 2 :, 1], color="b")
-        plt.legend(['Label 1', 'Label 0'], loc='upper right')
+            plt.scatter(inputdata[: size // 2, 0],inputdata[: size // 2, 1], color="r")
+            plt.scatter(inputdata[size // 2 :, 0],inputdata[size // 2 :, 1], color="b")
+            plt.legend(['Label 1', 'Label 0'], loc='upper right')
     
-    network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist)
-    network.backpropagation()
-    output = network.forwardewithcomputedW(inputdata)
+        network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype)
+        network.backpropagation()
+        output = network.forwardewithcomputedW(inputdata)
     
-    #plot network computed result
-    output = np.append(inputdata,output, axis=1)
-    print("Network computed output: ")
+        #plot network computed result
+        output = np.append(inputdata,output, axis=1)
+        print("Network computed output: ")
     
-    plt.figure(4)
-    if dim ==1:
+        plt.figure(4)
+        if dim ==1:
         
-        output1 = output[output[:, -1] == 1]
-        output2 = output[output[:, -1] == 0]
-        plt.scatter(output1[:, 0],np.ones((np.shape(output1)[0], 1)), color="r")
-        plt.scatter(output2[:, 0],np.ones((np.shape(output2)[0], 1)), color="b")
-        plt.legend(['Label 1', 'Label 0'], loc='upper right')
+            output1 = output[output[:, -1] == 1]
+            output2 = output[output[:, -1] == 0]
+            plt.scatter(output1[:, 0],np.ones((np.shape(output1)[0], 1)), color="r")
+            plt.scatter(output2[:, 0],np.ones((np.shape(output2)[0], 1)), color="b")
+            plt.legend(['Label 1', 'Label 0'], loc='upper right')
         
-    if dim ==2:
-        output1 = output[output[:, -1] == 1]
-        output2 = output[output[:, -1] == 0]
-        plt.scatter(output1[:, 0], output1[:, 1], color="r")
-        plt.scatter(output2[:, 0], output2[:, 1], color="b")
-        plt.legend(['Label 1', 'Label 0'], loc='upper right')
+        if dim ==2:
+            output1 = output[output[:, -1] == 1]
+            output2 = output[output[:, -1] == 0]
+            plt.scatter(output1[:, 0], output1[:, 1], color="r")
+            plt.scatter(output2[:, 0], output2[:, 1], color="b")
+            plt.legend(['Label 1', 'Label 0'], loc='upper right')
     
-    plt.show()
+        plt.show()
+    
+    elif modeltype == "r":
+        #generate the input and output for regression
+        inputdata, outputdata = generatedataForRegression(size,dim)
+        network = net(inputdata, outputdata, size, ss, numofiter,dim, hiddenlayerlist, modeltype)
+        network.backpropagation()
+        if dim == 2:
+            fig = plt.figure(figsize=(10,10))
+            ax = plt.axes(projection='3d')
+            X = np.arange(-4, 4, 0.1)
+            Y = np.arange(-4, 4, 0.1)
+            X, Y = np.meshgrid(X, Y)
+            a = X.flatten()
+            b = Y.flatten()
+            testx = np.append(np.reshape(a,(len(a),1)), np.reshape(b,(len(b),1)), axis=1)
+            outputy = np.reshape(network.forwardewithcomputedW(testx), np.shape(X))     
+            ax.plot_surface(X, Y, outputy,rstride=1, cstride=1,cmap=cm.coolwarm, linewidth=0, antialiased=False)
+        
+    
 
 
 if __name__ == '__main__':
