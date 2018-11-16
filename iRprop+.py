@@ -265,7 +265,7 @@ def main():
 	dim = 2			 #input dimension
 	margin = 0		  #change Margin at here, change this value to 0 to make the data not linear separable
 	
-	modeltype = input('Classification or Regression?(input 'c' or 'r')')
+	modeltype = input('Classification or Regression? (input c or r)')
 	
 	
 	if modeltype == 'c':
