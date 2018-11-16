@@ -30,23 +30,23 @@ def main():
 	modeltype = input('Classification or Regression? (input c or r)')
 	
 	
-	if modeltype == "c":
+	if modeltype == 'c':
 		
 		#generate the input and output for classification
 		inputdata, outputdata = generatedata(size, dim, margin)
 
 		#plot to viaualize if it is 1D
-		print("Training Data Plot: ")
+		print('Training Data Plot: ')
 		plt.figure(1)
 		if dim == 1:
 			
-			plt.scatter(inputdata[: size // 2, 0],np.ones((size // 2, 1)), color="r")
-			plt.scatter(inputdata[size // 2 :, 0],np.ones((size // 2, 1)), color="b")
+			plt.scatter(inputdata[: size // 2, 0],np.ones((size // 2, 1)), color='r')
+			plt.scatter(inputdata[size // 2 :, 0],np.ones((size // 2, 1)), color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 		elif dim == 2:
 		
-			plt.scatter(inputdata[: size // 2, 0],inputdata[: size // 2, 1], color="r")
-			plt.scatter(inputdata[size // 2 :, 0],inputdata[size // 2 :, 1], color="b")
+			plt.scatter(inputdata[: size // 2, 0],inputdata[: size // 2, 1], color='r')
+			plt.scatter(inputdata[size // 2 :, 0],inputdata[size // 2 :, 1], color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 	
 		network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm)
@@ -55,27 +55,27 @@ def main():
 	
 		#plot network computed result
 		output = np.append(inputdata,output, axis=1)
-		print("Network computed output: ")
+		print('Network computed output: ')
 	
 		plt.figure(4)
 		if dim ==1:
 		
 			output1 = output[output[:, -1] == 1]
 			output2 = output[output[:, -1] == 0]
-			plt.scatter(output1[:, 0],np.ones((np.shape(output1)[0], 1)), color="r")
-			plt.scatter(output2[:, 0],np.ones((np.shape(output2)[0], 1)), color="b")
+			plt.scatter(output1[:, 0],np.ones((np.shape(output1)[0], 1)), color='r')
+			plt.scatter(output2[:, 0],np.ones((np.shape(output2)[0], 1)), color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 		
 		if dim ==2:
 			output1 = output[output[:, -1] == 1]
 			output2 = output[output[:, -1] == 0]
-			plt.scatter(output1[:, 0], output1[:, 1], color="r")
-			plt.scatter(output2[:, 0], output2[:, 1], color="b")
+			plt.scatter(output1[:, 0], output1[:, 1], color='r')
+			plt.scatter(output2[:, 0], output2[:, 1], color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 	
 		plt.show()
 	
-	elif modeltype == "r":
+	elif modeltype == 'r':
 		#generate the input and output for regression
 		inputdata, outputdata = generatedataForRegression(size,dim)
 		network = net(inputdata, outputdata, size, ss, numofiter,dim, hiddenlayerlist, modeltype)
