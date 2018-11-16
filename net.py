@@ -11,7 +11,7 @@ from utils import ReluD, checkzero, sigmoid, sigmoidD
 from pdb import set_trace
 
 class net:
-	def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype):
+	def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm):
 		self.input = inputdata
 		self.output = outputdata
 		self.size = size
@@ -20,6 +20,7 @@ class net:
 		self.dim = dim
 		self.nd = len(hiddenlayerlist[0])
 		self.modeltype = modeltype
+		self.algorithm = algorithm
 
 		self.loss = []
 		self.hiddenunits = hiddenlayerlist
@@ -109,48 +110,180 @@ class net:
 				error = np.multiply(np.dot(errorlist[-j], tempW), ReluD(zlist[-j - 1]))
 				errorlist = [error] + errorlist
 			
-			########################## Rrop+ algorithm begin ##########################
-			#update W and b in Rprop algorithm
-			npos, nneg = 1.2, 0.5
-			dmax, dmin = 50.0, 0.000001
-			initial_d = 0.0001
-
-			# grad[k][i][j] means the kth layer, the gradient of w_ij
-			# prevgrad means the previous gradient
-			# d means the delta in the learning rule, it is always > 0
-			# dw is d * sign(gradient)
-			grad, prevgrad, d, dw = [], [], [], []
-			for k in range(0, len(self.wb)):
-				# np.shape(self.wb[k])[0] - 1, because the last row of self.wb[k] is bias, we only update weights
-				grad.append( np.zeros((np.shape(self.wb[k])[0] - 1, np.shape(self.wb[k])[1])) )
-				prevgrad.append( np.zeros(np.shape(grad[k])) )
-				dw.append( np.zeros(np.shape(grad[k])) )
-				d.append( np.ones(np.shape(grad[k])) * initial_d )
 			
-			for k in range(0, len(self.wb)):
-				grad[k] = np.dot(np.transpose(alist[k]), errorlist[k])
-				prev_grad_multiply_grad = prevgrad[k] * grad[k]
-				
-				gt_index = prev_grad_multiply_grad > 0
-				lt_index = prev_grad_multiply_grad < 0
-				eq_index = prev_grad_multiply_grad == 0
-				
-				## prev_grad * grad > 0 ##
-				d[k][gt_index] = np.minimum(d[k][gt_index] * npos, dmax)
-				dw[k][gt_index] = d[k][gt_index] * np.sign(grad[k][gt_index])
-				
-				## prev_grad * grad < 0 ##
-				d[k][lt_index] = np.maximum(d[k][lt_index] * nneg, dmin)
-				grad[k][lt_index] = 0
+			if self.algorithm == 'r+':
+				########################## Rprop+ algorithm begin ##########################
+				#update W and b in Rprop algorithm
+				npos, nneg = 1.2, 0.5
+				dmax, dmin = 50.0, 0.000001
+				initial_d = 0.0001
 
-				## prev_grad * grad == 0 ##
-				dw[k][eq_index] = d[k][eq_index] * np.sign(grad[k][eq_index])
+				# grad[k][i][j] means the kth layer, the gradient of w_ij
+				# prevgrad means the previous gradient
+				# d means the delta in the learning rule, it is always > 0
+				# dw is d * sign(gradient)
+				grad, prevgrad, d, dw = [], [], [], []
+				for k in range(0, len(self.wb)):
+					# np.shape(self.wb[k])[0] - 1, because the last row of self.wb[k] is bias, we only update weights
+					grad.append( np.zeros((np.shape(self.wb[k])[0] - 1, np.shape(self.wb[k])[1])) )
+					prevgrad.append( np.zeros(np.shape(grad[k])) )
+					dw.append( np.zeros(np.shape(grad[k])) )
+					d.append( np.ones(np.shape(grad[k])) * initial_d )
 				
-				self.wb[k][0:-1, :] = self.wb[k][0:-1, :] - dw[k]
-				self.wb[k][-1, :] = self.wb[k][-1, :] - self.ss * np.mean(errorlist[k], axis=0) / self.size
+				for k in range(0, len(self.wb)):
+					grad[k] = np.dot(np.transpose(alist[k]), errorlist[k])
+					prev_grad_multiply_grad = prevgrad[k] * grad[k]
+					
+					gt_index = prev_grad_multiply_grad > 0
+					lt_index = prev_grad_multiply_grad < 0
+					eq_index = prev_grad_multiply_grad == 0
+					
+					## prev_grad * grad > 0 ##
+					d[k][gt_index] = np.minimum(d[k][gt_index] * npos, dmax)
+					dw[k][gt_index] = d[k][gt_index] * np.sign(grad[k][gt_index])
+					
+					## prev_grad * grad < 0 ##
+					d[k][lt_index] = np.maximum(d[k][lt_index] * nneg, dmin)
+					grad[k][lt_index] = 0
+
+					## prev_grad * grad == 0 ##
+					dw[k][eq_index] = d[k][eq_index] * np.sign(grad[k][eq_index])
+					
+					self.wb[k][0:-1, :] = self.wb[k][0:-1, :] - dw[k]
+					self.wb[k][-1, :] = self.wb[k][-1, :] - self.ss * np.mean(errorlist[k], axis=0) / self.size
+					
+					prevgrad[k] = grad[k]
+				########################## Rprop+ algorithm end ##########################
+			elif self.algorithm == 'r-':
+				########################## Rprop- algorithm begin ##########################
+				#update W and b in Rprop algorithm
+				npos, nneg = 1.2, 0.5
+				dmax, dmin = 50.0, 0.000001
+				initial_d = 0.0001
+
+				# grad[k][i][j] means the kth layer, the gradient of w_ij
+				# prevgrad means the previous gradient
+				# d means the delta in the learning rule, it is always > 0
+				# dw is d * sign(gradient)
+				grad, prevgrad, d, dw = [], [], [], []
+				for k in range(0, len(self.wb)):
+					# np.shape(self.wb[k])[0] - 1, because the last row of self.wb[k] is bias, we only update weights
+					grad.append( np.zeros((np.shape(self.wb[k])[0] - 1, np.shape(self.wb[k])[1])) )
+					prevgrad.append( np.zeros(np.shape(grad[k])) )
+					dw.append( np.zeros(np.shape(grad[k])) )
+					d.append( np.ones(np.shape(grad[k])) * initial_d )
 				
-				prevgrad[k] = grad[k]
-			########################## Rrop+ algorithm end ##########################
+				for k in range(0, len(self.wb)):
+					grad[k] = np.dot(np.transpose(alist[k]), errorlist[k])
+					prev_grad_multiply_grad = prevgrad[k] * grad[k]
+					
+					gt_index = prev_grad_multiply_grad > 0
+					lt_index = prev_grad_multiply_grad < 0
+					eq_index = prev_grad_multiply_grad == 0
+					
+					## prev_grad * grad > 0 ##
+					d[k][gt_index] = np.minimum(d[k][gt_index] * npos, dmax)
+					## prev_grad * grad < 0 ##
+					d[k][lt_index] = np.maximum(d[k][lt_index] * nneg, dmin)
+
+					dw[k] = d[k] * np.sign(grad[k])
+					
+					self.wb[k][0:-1, :] = self.wb[k][0:-1, :] - dw[k]
+					self.wb[k][-1, :] = self.wb[k][-1, :] - self.ss * np.mean(errorlist[k], axis=0) / self.size
+					
+					prevgrad[k] = grad[k]
+				########################## Rprop- algorithm end ##########################
+			elif self.algorithm == 'ir+':
+				########################## iRprop+ algorithm begin ##########################
+				#update W and b in Rprop algorithm
+				npos, nneg = 1.2, 0.5
+				dmax, dmin = 50.0, 0.000001
+				initial_d = 0.0001
+
+				# grad[k][i][j] means the kth layer, the gradient of w_ij
+				# prevgrad means the previous gradient
+				# d means the delta in the learning rule, it is always > 0
+				# dw is d * sign(gradient)
+				grad, prevgrad, d, dw = [], [], [], []
+				for k in range(0, len(self.wb)):
+					# np.shape(self.wb[k])[0] - 1, because the last row of self.wb[k] is bias, we only update weights
+					grad.append( np.zeros((np.shape(self.wb[k])[0] - 1, np.shape(self.wb[k])[1])) )
+					prevgrad.append( np.zeros(np.shape(grad[k])) )
+					dw.append( np.zeros(np.shape(grad[k])) )
+					d.append( np.ones(np.shape(grad[k])) * initial_d )
+				
+				for k in range(0, len(self.wb)):
+					grad[k] = np.dot(np.transpose(alist[k]), errorlist[k])
+					prev_grad_multiply_grad = prevgrad[k] * grad[k]
+					
+					gt_index = prev_grad_multiply_grad > 0
+					lt_index = prev_grad_multiply_grad < 0
+					eq_index = prev_grad_multiply_grad == 0
+					
+					## prev_grad * grad > 0 ##
+					d[k][gt_index] = np.minimum(d[k][gt_index] * npos, dmax)
+					dw[k][gt_index] = d[k][gt_index] * np.sign(grad[k][gt_index])
+					
+					## prev_grad * grad < 0 ##
+					d[k][lt_index] = np.maximum(d[k][lt_index] * nneg, dmin)
+					grad[k][lt_index] = 0
+					# print(self.loss)
+					try:
+						if self.loss[-1] > self.loss[-2]:
+							dw[k][lt_index] = -dw[k][lt_index]
+						else:
+							dw[k][lt_index] = 0
+					except:
+						dw[k][lt_index] = 0
+
+					## prev_grad * grad == 0 ##
+					dw[k][eq_index] = d[k][eq_index] * np.sign(grad[k][eq_index])
+					
+					self.wb[k][0:-1, :] = self.wb[k][0:-1, :] - dw[k]
+					self.wb[k][-1, :] = self.wb[k][-1, :] - self.ss * np.mean(errorlist[k], axis=0) / self.size
+					
+					prevgrad[k] = grad[k]
+				########################## iRprop+ algorithm end ##########################
+			elif self.algorithm == 'ir-':
+				########################## iRprop- algorithm begin ##########################
+				#update W and b in Rprop algorithm
+				npos, nneg = 1.2, 0.5
+				dmax, dmin = 50.0, 0.000001
+				initial_d = 0.0001
+
+				# grad[k][i][j] means the kth layer, the gradient of w_ij
+				# prevgrad means the previous gradient
+				# d means the delta in the learning rule, it is always > 0
+				# dw is d * sign(gradient)
+				grad, prevgrad, d, dw = [], [], [], []
+				for k in range(0, len(self.wb)):
+					# np.shape(self.wb[k])[0] - 1, because the last row of self.wb[k] is bias, we only update weights
+					grad.append( np.zeros((np.shape(self.wb[k])[0] - 1, np.shape(self.wb[k])[1])) )
+					prevgrad.append( np.zeros(np.shape(grad[k])) )
+					dw.append( np.zeros(np.shape(grad[k])) )
+					d.append( np.ones(np.shape(grad[k])) * initial_d )
+				
+				for k in range(0, len(self.wb)):
+					grad[k] = np.dot(np.transpose(alist[k]), errorlist[k])
+					prev_grad_multiply_grad = prevgrad[k] * grad[k]
+					
+					gt_index = prev_grad_multiply_grad > 0
+					lt_index = prev_grad_multiply_grad < 0
+					eq_index = prev_grad_multiply_grad == 0
+					
+					## prev_grad * grad > 0 ##
+					d[k][gt_index] = np.minimum(d[k][gt_index] * npos, dmax)
+					## prev_grad * grad < 0 ##
+					d[k][lt_index] = np.maximum(d[k][lt_index] * nneg, dmin)
+					grad[k][lt_index] = 0
+
+					dw[k] = d[k] * np.sign(grad[k])
+					
+					self.wb[k][0:-1, :] = self.wb[k][0:-1, :] - dw[k]
+					self.wb[k][-1, :] = self.wb[k][-1, :] - self.ss * np.mean(errorlist[k], axis=0) / self.size
+					
+					prevgrad[k] = grad[k]
+				########################## iRprop- algorithm end ##########################
 		
 		#plot the Loss
 		plt.figure(3)
