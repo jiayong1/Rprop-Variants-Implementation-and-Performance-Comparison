@@ -50,7 +50,7 @@ class net:
 		
 		a = np.append(a, ones, axis=1)
 		z = np.dot(a, self.wb[-1])
-		if self.modeltype == "c":
+		if self.modeltype == 'c':
 			a = sigmoid(z)
 			a[a > 0.5] = 1
 			a[a <= 0.5] = 0
@@ -87,7 +87,7 @@ class net:
 			
 			zlist.append(z)
 			
-			if self.modeltype == "c":
+			if self.modeltype == 'c':
 				a = sigmoid(z)
 				a = checkzero(a)
 				alist.append(a)
@@ -240,7 +240,7 @@ def sigmoid(x):
 	return 1 / (1 + np.exp(-x))
 
 def sigmoidD(x):
-	"""Derivative of the sigmoid function."""
+	'''Derivative of the sigmoid function.'''
 	return sigmoid(x) - np.multiply(sigmoid(x), sigmoid(x))
 
 
@@ -254,26 +254,26 @@ def main():
 	dim = 2			 #input dimension
 	margin = 0		  #change Margin at here, change this value to 0 to make the data not linear separable
 	
-	modeltype = input("Classification or Regression?(input 'c' or 'r')")
+	modeltype = input('Classification or Regression?(input 'c' or 'r')')
 	
 	
-	if modeltype == "c":
+	if modeltype == 'c':
 		
 		#generate the input and output for classification
 		inputdata, outputdata = generatedata(size, dim, margin)
 
 		#plot to viaualize if it is 1D
-		print("Training Data Plot: ")
+		print('Training Data Plot: ')
 		plt.figure(1)
 		if dim == 1:
 			
-			plt.scatter(inputdata[: size // 2, 0],np.ones((size // 2, 1)), color="r")
-			plt.scatter(inputdata[size // 2 :, 0],np.ones((size // 2, 1)), color="b")
+			plt.scatter(inputdata[: size // 2, 0],np.ones((size // 2, 1)), color='r')
+			plt.scatter(inputdata[size // 2 :, 0],np.ones((size // 2, 1)), color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 		elif dim == 2:
 		
-			plt.scatter(inputdata[: size // 2, 0],inputdata[: size // 2, 1], color="r")
-			plt.scatter(inputdata[size // 2 :, 0],inputdata[size // 2 :, 1], color="b")
+			plt.scatter(inputdata[: size // 2, 0],inputdata[: size // 2, 1], color='r')
+			plt.scatter(inputdata[size // 2 :, 0],inputdata[size // 2 :, 1], color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 	
 		network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype)
@@ -282,27 +282,27 @@ def main():
 	
 		#plot network computed result
 		output = np.append(inputdata,output, axis=1)
-		print("Network computed output: ")
+		print('Network computed output: ')
 	
 		plt.figure(4)
 		if dim ==1:
 		
 			output1 = output[output[:, -1] == 1]
 			output2 = output[output[:, -1] == 0]
-			plt.scatter(output1[:, 0],np.ones((np.shape(output1)[0], 1)), color="r")
-			plt.scatter(output2[:, 0],np.ones((np.shape(output2)[0], 1)), color="b")
+			plt.scatter(output1[:, 0],np.ones((np.shape(output1)[0], 1)), color='r')
+			plt.scatter(output2[:, 0],np.ones((np.shape(output2)[0], 1)), color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 		
 		if dim ==2:
 			output1 = output[output[:, -1] == 1]
 			output2 = output[output[:, -1] == 0]
-			plt.scatter(output1[:, 0], output1[:, 1], color="r")
-			plt.scatter(output2[:, 0], output2[:, 1], color="b")
+			plt.scatter(output1[:, 0], output1[:, 1], color='r')
+			plt.scatter(output2[:, 0], output2[:, 1], color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 	
 		plt.show()
 	
-	elif modeltype == "r":
+	elif modeltype == 'r':
 		#generate the input and output for regression
 		inputdata, outputdata = generatedataForRegression(size,dim)
 		network = net(inputdata, outputdata, size, ss, numofiter,dim, hiddenlayerlist, modeltype)
