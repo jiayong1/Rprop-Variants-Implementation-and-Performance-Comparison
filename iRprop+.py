@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import math
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-%matplotlib inline
+#%matplotlib inline
 
 from pdb import set_trace
 
@@ -260,7 +260,7 @@ def main():
 	hiddenlayerlist = [[16,32,16]]	#change the number of hidden layer, and nodes in the layer
 	
 	ss = 1e-4		   #step Size
-	numofiter = 100000   #iterations
+	numofiter = 1000   #iterations
 	size = 2500		  #input size
 	dim = 2			 #input dimension
 	margin = 0		  #change Margin at here, change this value to 0 to make the data not linear separable
