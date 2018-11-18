@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
-from utils import ReluD, checkzero, sigmoid, sigmoidD
+from utils import ReluD, checkzero, sigmoid, sigmoidD, softmax, softmaxD
 
 from pdb import set_trace
 
@@ -52,8 +52,10 @@ class net:
 			a = sigmoid(z)
 			a[a > 0.5] = 1
 			a[a <= 0.5] = 0
-		else:
+		elif self.modeltype == 'r':
 			a = z
+		elif self.modeltype == 'mnist':
+			a = softmax(z)
 		
 		return a
 		
@@ -79,7 +81,7 @@ class net:
 				zlist.append(z)
 				a = np.maximum(z, 0)
 				alist.append(a)
-		
+			
 			a = np.append(a, ones, axis=1)
 			z = np.dot(a, self.wb[-1])
 			
@@ -100,12 +102,12 @@ class net:
 				outputerror = (zlist[-1] - self.output)
 			
 			elif self.modeltype == 'mnist':
-				a = sigmoid(z)
+				a = softmax(z)
 				a = checkzero(a)
 				alist.append(a)
 				#modified loss(classification)
 				self.loss.append((-1) * np.mean(((1 - self.output) * np.log(1 - alist[-1])) + self.output * np.log(alist[-1])))
-				outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * sigmoidD(zlist[-1])
+				outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * softmaxD(zlist[-1])
 			
 			
 			#backward
@@ -121,7 +123,7 @@ class net:
 				
 				#updated W and b
 				for i in range(0, len(self.wb)):
-
+					set_trace()
 					theW = self.wb[i][0 : -1, :] - (self.ss) * np.dot(np.transpose(alist[i]), errorlist[i]) / self.size
 					theB = np.reshape(self.wb[i][-1, :], (1,np.shape(self.wb[i][-1, :])[0])) - (self.ss) * np.reshape(np.mean(errorlist[i], axis=0), (1, np.shape(self.wb[i][-1, :])[0])) / self.size
 					newW.append(np.vstack((theW, theB)))

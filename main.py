@@ -32,7 +32,7 @@ def main():
 	algorithm = input('Select algorithm: (input ebp, r+, r-, ir+ or ir-)')
 	algorithm = 'ebp'
 	modeltype = input('Classification or Regression? (input c, r or mnist)')
-	modeltype = 'mnist'
+#	modeltype = 'mnist'
 	
 	
 	if modeltype == 'c':
@@ -105,14 +105,16 @@ def main():
 		test_images = mnist.test_images().reshape((-1, 28**2))
 		test_labels = mnist.test_labels().reshape((-1, 1))
 		
-		size = train_images.shape[0]
+#		size = train_images.shape[0]
+		size = 1
 		numofiter = 1
-		dim = 2
+		dim = 28**2
 		hiddenlayerlist = [[1000]]
 		output_unit = 10
 		
-		network = net(train_images, train_labels, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
-		
+		network = net(train_images[:size, :], train_labels[:size, :], size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
+#		set_trace()
+		network.backpropagation()
 		set_trace()
 
 
