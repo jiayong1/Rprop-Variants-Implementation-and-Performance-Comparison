@@ -32,7 +32,7 @@ def main():
 	algorithm = input('Select algorithm: (input ebp, r+, r-, ir+ or ir-)')
 	algorithm = 'ebp'
 	modeltype = input('Classification or Regression? (input c, r or mnist)')
-#	modeltype = 'mnist'
+	modeltype = 'mnist'
 	
 	
 	if modeltype == 'c':
@@ -106,8 +106,8 @@ def main():
 		test_labels = mnist.test_labels().reshape((-1, 1))
 		
 #		size = train_images.shape[0]
-		size = 1
-		numofiter = 1
+		size = 10000
+		numofiter = 10
 		dim = 28**2
 		hiddenlayerlist = [[1000]]
 		output_unit = 10

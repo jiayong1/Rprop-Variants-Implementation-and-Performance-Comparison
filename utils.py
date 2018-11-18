@@ -25,5 +25,6 @@ def softmax(x):
 	return softmax_x
 
 def softmaxD(x):
-	s = softmax(x).reshape(-1,1)
-	return np.diagflat(s) - np.dot(s, s.T)
+#	s = softmax(x).reshape(-1,1)
+#	return np.diagflat(s) - np.dot(s, s.T)
+	return softmax(x) - np.multiply(softmax(x), softmax(x))

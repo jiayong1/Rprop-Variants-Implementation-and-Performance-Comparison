@@ -123,7 +123,7 @@ class net:
 				
 				#updated W and b
 				for i in range(0, len(self.wb)):
-					set_trace()
+#					set_trace()
 					theW = self.wb[i][0 : -1, :] - (self.ss) * np.dot(np.transpose(alist[i]), errorlist[i]) / self.size
 					theB = np.reshape(self.wb[i][-1, :], (1,np.shape(self.wb[i][-1, :])[0])) - (self.ss) * np.reshape(np.mean(errorlist[i], axis=0), (1, np.shape(self.wb[i][-1, :])[0])) / self.size
 					newW.append(np.vstack((theW, theB)))
