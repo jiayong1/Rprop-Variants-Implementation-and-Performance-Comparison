@@ -27,10 +27,12 @@ def main():
 	dim = 2			 #input dimension
 	margin = 0		  #change Margin at here, change this value to 0 to make the data not linear separable
 	
-	algorithm = input('Select algorithm: (input ebp, r+, r-, ir+ or ir-)')
+	output_unit = 1
 	
+	algorithm = input('Select algorithm: (input ebp, r+, r-, ir+ or ir-)')
+	algorithm = 'ebp'
 	modeltype = input('Classification or Regression? (input c, r or mnist)')
-#	modeltype = 'mnist'
+	modeltype = 'mnist'
 	
 	
 	if modeltype == 'c':
@@ -52,7 +54,7 @@ def main():
 			plt.scatter(inputdata[size // 2 :, 0],inputdata[size // 2 :, 1], color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 	
-		network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm)
+		network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
 		network.backpropagation()
 		output = network.forwardewithcomputedW(inputdata)
 	
@@ -81,7 +83,7 @@ def main():
 	elif modeltype == 'r':
 		#generate the input and output for regression
 		inputdata, outputdata = generatedataForRegression(size,dim)
-		network = net(inputdata, outputdata, size, ss, numofiter,dim, hiddenlayerlist, modeltype)
+		network = net(inputdata, outputdata, size, ss, numofiter,dim, hiddenlayerlist, modeltype, output_unit)
 		network.backpropagation()
 		if dim == 2:
 			fig = plt.figure(figsize=(10,10))
@@ -103,7 +105,13 @@ def main():
 		test_images = mnist.test_images().reshape((-1, 28**2))
 		test_labels = mnist.test_labels().reshape((-1, 1))
 		
-		network = net(train_images, train_labels, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm)
+		size = train_images.shape[0]
+		numofiter = 1
+		dim = 2
+		hiddenlayerlist = [[1000]]
+		output_unit = 10
+		
+		network = net(train_images, train_labels, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
 		
 		set_trace()
 

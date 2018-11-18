@@ -7,7 +7,7 @@ from utils import ReluD, checkzero, sigmoid, sigmoidD
 from pdb import set_trace
 
 class net:
-	def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm):
+	def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit):
 		self.input = inputdata
 		self.output = outputdata
 		self.size = size
@@ -20,6 +20,7 @@ class net:
 
 		self.loss = []
 		self.hiddenunits = hiddenlayerlist
+		self.output_unit = output_unit
 		
 		#randomly generate the weights and biases based on the layers and units
 		wb = []
@@ -28,7 +29,7 @@ class net:
 			for i in range(1,self.nd):
 				wb.append(np.random.rand(self.hiddenunits[0][i - 1] + 1, self.hiddenunits[0][i]) * 2 - 1)
 		
-		wb.append(np.random.rand(self.hiddenunits[0][-1] + 1, 1) * 2 - 1)
+		wb.append(np.random.rand(self.hiddenunits[0][-1] + 1, output_unit) * 2 - 1)
 		self.wb = wb
 	
 	#only forward to get the result
@@ -91,11 +92,20 @@ class net:
 				#modified loss(classification)
 				self.loss.append((-1) * np.mean(((1 - self.output) * np.log(1 - alist[-1])) + self.output * np.log(alist[-1])))
 				outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * sigmoidD(zlist[-1])
-			else:
+			
+			elif self.modeltype == 'r':
 				#loss(Regression)
 				alist.append(a)
 				self.loss.append( np.mean(0.5 * np.square(self.output - zlist[-1]), axis=0))
 				outputerror = (zlist[-1] - self.output)
+			
+			elif self.modeltype == 'mnist':
+				a = sigmoid(z)
+				a = checkzero(a)
+				alist.append(a)
+				#modified loss(classification)
+				self.loss.append((-1) * np.mean(((1 - self.output) * np.log(1 - alist[-1])) + self.output * np.log(alist[-1])))
+				outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * sigmoidD(zlist[-1])
 			
 			
 			#backward
