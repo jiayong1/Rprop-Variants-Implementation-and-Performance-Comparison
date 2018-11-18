@@ -105,6 +105,12 @@ def main():
 		test_images = mnist.test_images().reshape((-1, 28**2))
 		test_labels = mnist.test_labels().reshape((-1, 1))
 		
+		train_images = train_images / (train_images.max() - train_images.min())
+		train_images -= train_images.mean()
+#		set_trace()
+		test_images = test_images / (test_images.max() - test_images.min())
+		test_images -= test_images.mean()
+		
 #		size = train_images.shape[0]
 		size = 10000
 		numofiter = 10
