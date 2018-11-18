@@ -106,8 +106,19 @@ class net:
 				error = np.multiply(np.dot(errorlist[-j], tempW), ReluD(zlist[-j - 1]))
 				errorlist = [error] + errorlist
 			
+			if self.algorithm == 'ebp':
+				newW = []
+				
+				#updated W and b
+				for i in range(0, len(self.wb)):
+
+					theW = self.wb[i][0 : -1, :] - (self.ss) * np.dot(np.transpose(alist[i]), errorlist[i]) / self.size
+					theB = np.reshape(self.wb[i][-1, :], (1,np.shape(self.wb[i][-1, :])[0])) - (self.ss) * np.reshape(np.mean(errorlist[i], axis=0), (1, np.shape(self.wb[i][-1, :])[0])) / self.size
+					newW.append(np.vstack((theW, theB)))
+				
+				self.wb = newW
 			
-			if self.algorithm == 'r+':
+			elif self.algorithm == 'r+':
 				########################## Rprop+ algorithm begin ##########################
 				#update W and b in Rprop algorithm
 				npos, nneg = 1.2, 0.5

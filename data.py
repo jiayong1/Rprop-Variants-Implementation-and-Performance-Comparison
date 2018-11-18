@@ -4,6 +4,8 @@ import math
 from matplotlib import cm
 #%matplotlib inline
 
+import mnist
+
 from pdb import set_trace
 
 def generatedata(size, dim, margin):
@@ -70,4 +72,7 @@ def generatedataForRegression(size,dim):
 	ax = plt.axes(projection='3d')
 	out = np.reshape(y, np.shape(X))
 	ax.plot_surface(X, Y, out,rstride=1, cstride=1,cmap=cm.coolwarm, linewidth=0, antialiased=False)
-	return x, y 
+	return x, y
+
+def get_mnist():
+	set_trace()

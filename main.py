@@ -6,8 +6,10 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 #%matplotlib inline
 
+import mnist
+
 from net import net
-from data import generatedata
+from data import generatedata, generatedataForRegression, get_mnist
 from utils import ReluD, checkzero, sigmoid, sigmoidD
 
 from pdb import set_trace
@@ -25,9 +27,10 @@ def main():
 	dim = 2			 #input dimension
 	margin = 0		  #change Margin at here, change this value to 0 to make the data not linear separable
 	
-	algorithm = input('Select algorithm: (input r+, r-, ir+ or ir-)')
+	algorithm = input('Select algorithm: (input ebp, r+, r-, ir+ or ir-)')
 	
-	modeltype = input('Classification or Regression? (input c or r)')
+	modeltype = input('Classification or Regression? (input c, r or mnist)')
+#	modeltype = 'mnist'
 	
 	
 	if modeltype == 'c':
@@ -92,7 +95,17 @@ def main():
 			outputy = np.reshape(network.forwardewithcomputedW(testx), np.shape(X))	 
 			ax.plot_surface(X, Y, outputy,rstride=1, cstride=1,cmap=cm.coolwarm, linewidth=0, antialiased=False)
 		
-	
+	elif modeltype == 'mnist':
+#		get_mnist()
+		train_images = mnist.train_images().reshape((-1, 28**2))
+		train_labels = mnist.train_labels().reshape((-1, 1))
+		
+		test_images = mnist.test_images().reshape((-1, 28**2))
+		test_labels = mnist.test_labels().reshape((-1, 1))
+		
+		network = net(train_images, train_labels, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm)
+		
+		set_trace()
 
 
 if __name__ == '__main__':
