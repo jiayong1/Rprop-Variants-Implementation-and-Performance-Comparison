@@ -39,12 +39,14 @@ class net:
 		newinput = np.append(testx, ones, axis=1)
 		
 		z = np.dot(newinput, self.wb[0])
-		a = np.maximum(z, 0)
+#		a = np.maximum(z, 0)
+		a = sigmoid(z)
 		
 		for i in range(1, self.nd):
 			a = np.append(a, ones, axis=1)
 			z = np.dot(a, self.wb[i])
-			a = np.maximum(z, 0)
+#			a = np.maximum(z, 0)
+			a = sigmoid(z)
 		
 		a = np.append(a, ones, axis=1)
 		z = np.dot(a, self.wb[-1])
@@ -71,7 +73,8 @@ class net:
 			zlist = []
 			
 			z = np.dot(newinput, self.wb[0])
-			a = np.maximum(z, 0)
+#			a = np.maximum(z, 0)
+			a = sigmoid(z)
 			alist.append(a)
 			zlist.append(z)
 			
@@ -79,7 +82,8 @@ class net:
 				a = np.append(a, ones, axis=1)
 				z = np.dot(a, self.wb[i])
 				zlist.append(z)
-				a = np.maximum(z, 0)
+#				a = np.maximum(z, 0)
+				a = sigmoid(z)
 				alist.append(a)
 			
 			a = np.append(a, ones, axis=1)
@@ -103,6 +107,7 @@ class net:
 			
 			elif self.modeltype == 'mnist':
 				a = softmax(z)
+#				print(a[0])
 				a = checkzero(a)
 				alist.append(a)
 				#modified loss(classification)
@@ -115,7 +120,8 @@ class net:
 			for j in range(1, self.nd + 1):
 				
 				tempW = np.delete(np.transpose(self.wb[-j]), -1, axis=1)
-				error = np.multiply(np.dot(errorlist[-j], tempW), ReluD(zlist[-j - 1]))
+#				error = np.multiply(np.dot(errorlist[-j], tempW), ReluD(zlist[-j - 1]))
+				error = np.multiply(np.dot(errorlist[-j], tempW), sigmoidD(zlist[-j - 1]))
 				errorlist = [error] + errorlist
 			
 			if self.algorithm == 'ebp':

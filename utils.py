@@ -18,10 +18,19 @@ def sigmoid(x):
 def sigmoidD(x):
 	'''Derivative of the sigmoid function.'''
 	return sigmoid(x) - np.multiply(sigmoid(x), sigmoid(x))
-
+'''
+def softmax(y):
+	softmax_y = np.zeros(y.shape)
+	for i in range(y.shape[0]):
+		x = y[i, :]
+		x = x - np.max(x)
+		softmax_x = np.exp(x) / np.sum(np.exp(x))
+		softmax_y[i, :] = softmax_x
+	return softmax_y
+'''
 def softmax(x):
-	x = x - np.max(x)
-	softmax_x = np.exp(x) / np.sum(np.exp(x))
+	x = x - x.max(axis=1).reshape(x.shape[0], 1)
+	softmax_x = np.exp(x) / np.sum(np.exp(x), axis=1).reshape(x.shape[0], 1)
 	return softmax_x
 
 def softmaxD(x):
