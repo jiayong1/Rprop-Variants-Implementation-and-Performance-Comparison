@@ -111,8 +111,10 @@ class net:
 				a = checkzero(a)
 				alist.append(a)
 				#modified loss(classification)
-				self.loss.append((-1) * np.mean(((1 - self.output) * np.log(1 - alist[-1])) + self.output * np.log(alist[-1])))
-				outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * softmaxD(zlist[-1])
+#				self.loss.append((-1) * np.mean(((1 - self.output) * np.log(1 - alist[-1])) + self.output * np.log(alist[-1])))
+				self.loss.append(- np.mean(np.sum(self.output * np.log(alist[-1]), axis=1)))
+#				outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * softmaxD(zlist[-1])
+				outputerror = - (self.output/alist[-1]) * softmaxD(zlist[-1])
 			
 			
 			#backward

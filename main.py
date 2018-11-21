@@ -21,7 +21,7 @@ def main():
 	#set hyperparameter at here 
 	hiddenlayerlist = [[16,32,16]]	#change the number of hidden layer, and nodes in the layer
 	
-	ss = 1e-4		   #step Size
+	ss = 1e-3		   #step Size
 	numofiter = 1000   #iterations
 	size = 2500		  #input size
 	dim = 2			 #input dimension
