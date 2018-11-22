@@ -29,7 +29,7 @@ class net:
 			for i in range(1,self.nd):
 				wb.append(np.random.rand(self.hiddenunits[0][i - 1] + 1, self.hiddenunits[0][i]) * 2 - 1)
 		
-		wb.append(np.random.rand(self.hiddenunits[0][-1] + 1, output_unit) * 2 - 1)
+		wb.append(np.random.rand(self.hiddenunits[0][-1] + 1, self.output_unit) * 2 - 1)
 		self.wb = wb
 	
 	#only forward to get the result
@@ -115,6 +115,9 @@ class net:
 				self.loss.append(- np.mean(np.sum(self.output * np.log(alist[-1]), axis=1)))
 #				outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * softmaxD(zlist[-1])
 				outputerror = - (self.output/alist[-1]) * softmaxD(zlist[-1])
+#				set_trace()
+#				correct_logprobs = -np.log(probs[range(num_examples),y])
+#				data_loss = np.sum(correct_logprobs)/num_examples
 			
 			
 			#backward

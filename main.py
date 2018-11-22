@@ -10,7 +10,7 @@ import mnist
 
 from net import net
 from data import generatedata, generatedataForRegression, get_mnist
-from utils import softmax
+from utils import get_one_hot, softmax
 
 from pdb import set_trace
 
@@ -118,7 +118,7 @@ def main():
 		hiddenlayerlist = [[1024, 256, 64]]
 		output_unit = 10
 		
-		network = net(train_images[: size, :], train_labels[: size, :], size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
+		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
 #		set_trace()
 		network.backpropagation()
 		

@@ -2,6 +2,10 @@ import numpy as np
 
 from pdb import set_trace
 
+def get_one_hot(targets, nb_classes):
+	one_hot = np.eye(nb_classes)[np.array(targets).reshape(-1)]
+	return one_hot
+
 def ReluD(x):
 	x[x > 0] = 1
 	x[x <= 0] = 0
