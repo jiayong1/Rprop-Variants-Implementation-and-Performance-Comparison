@@ -10,7 +10,7 @@ import mnist
 
 from net import net
 from data import generatedata, generatedataForRegression, get_mnist
-from utils import ReluD, checkzero, sigmoid, sigmoidD
+from utils import softmax
 
 from pdb import set_trace
 
@@ -115,12 +115,25 @@ def main():
 		size = 10000
 		numofiter = 100
 		dim = 28**2
-		hiddenlayerlist = [[1000]]
+		hiddenlayerlist = [[1024, 256, 64]]
 		output_unit = 10
 		
-		network = net(train_images[:size, :], train_labels[:size, :], size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
+		network = net(train_images[: size, :], train_labels[: size, :], size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
 #		set_trace()
 		network.backpropagation()
+		
+		# validate/test the accuracy
+		
+		val_size = 1000
+		
+		val_imgs = train_images[: val_size]
+		val_lbls = train_labels[: val_size].flatten()
+		
+		val_out_raw = network.forwardewithcomputedW(val_imgs)
+		val_out_softmax = softmax(val_out_raw)
+		val_out_cls = np.argmax(val_out_softmax, axis=1)
+		
+		accuracy = sum(val_out_cls == val_lbls) / val_size
 		set_trace()
 
 
