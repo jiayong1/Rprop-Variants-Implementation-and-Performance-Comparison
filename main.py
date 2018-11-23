@@ -118,7 +118,8 @@ def main():
 		hiddenlayerlist = [[1024, 256, 64]]
 		output_unit = 10
 		
-		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
+		# get_one_hot(train_labels[: size, :], 10)
+		network = net(train_images[: size, :], train_labels[: size, :].flatten(), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
 #		set_trace()
 		network.backpropagation()
 		
