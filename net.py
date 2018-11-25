@@ -112,11 +112,11 @@ class net:
 				alist.append(a)
 				#modified loss(classification)
 #				self.loss.append((-1) * np.mean(((1 - self.output) * np.log(1 - alist[-1])) + self.output * np.log(alist[-1])))
-#				self.loss.append(- np.mean(np.sum(self.output * np.log(alist[-1]), axis=1)))
+				self.loss.append(- np.mean(np.sum(self.output * np.log(alist[-1]), axis=1)))
 #				outputerror = ((1 - self.output)/(1 - alist[-1]) - self.output / alist[-1]) * softmaxD(zlist[-1])
 				outputerror = - (self.output/alist[-1]) * softmaxD(zlist[-1])
 #				set_trace()
-				correct_logprobs = -np.log(alist[-1][range(self.size) , self.output])
+#				correct_logprobs = -np.log(alist[-1][range(self.size) , self.output])
 #				data_loss = np.sum(correct_logprobs) / self.size
 #				self.loss.append(data_loss)
 #				outputerror = data_loss
