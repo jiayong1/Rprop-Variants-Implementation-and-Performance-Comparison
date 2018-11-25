@@ -119,8 +119,8 @@ def main():
 		output_unit = 10
 		
 		# get_one_hot(train_labels[: size, :], 10)
-		# .flatten()
-		network = net(train_images[: size, :], train_labels[: size, :], size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
+		# train_labels[: size, :].flatten()
+		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
 #		set_trace()
 		network.backpropagation()
 		
