@@ -316,6 +316,11 @@ class net:
 					
 					prevgrad[k] = grad[k]
 				########################## iRprop- algorithm end ##########################
+			
+			
+			if e % 100 == 0:
+				print('Epoch ' + str(e) + ' finished. Current loss: ' + str(self.loss[-1]))
+			
 		
 		#plot the Loss
 		plt.figure(3)

@@ -113,7 +113,7 @@ def main():
 		
 #		size = train_images.shape[0]
 		size = 60000
-		numofiter = 1000
+		numofiter = 5000
 		dim = 28**2
 		hiddenlayerlist = [[1000]] # 2500, 2000, 1500, 1000, 500
 		output_unit = 10
@@ -136,6 +136,19 @@ def main():
 		val_out_cls = np.argmax(val_out_softmax, axis=1)
 		
 		accuracy = sum(val_out_cls == val_lbls) / val_size
+		print('validation accuracy: ')
+		
+		tst_size = 10000
+		
+		tst_imgs = train_images[: tst_size]
+		tst_lbls = train_labels[: tst_size].flatten()
+		
+		tst_out_raw = network.forwardewithcomputedW(tst_imgs)
+		tst_out_softmax = softmax(tst_out_raw)
+		tst_out_cls = np.argmax(tst_out_softmax, axis=1)
+		
+		accuracy = sum(tst_out_cls == tst_lbls) / tst_size
+		print('test accuracy: ' + accuracy)
 		set_trace()
 
 
