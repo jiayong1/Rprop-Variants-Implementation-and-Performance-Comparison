@@ -21,7 +21,7 @@ def main():
 	#set hyperparameter at here 
 	hiddenlayerlist = [[16,32,16]]	#change the number of hidden layer, and nodes in the layer
 	
-	ss = 1e-3		   #step Size
+	ss = 1e-2		   #step Size
 	numofiter = 1000   #iterations
 	size = 2500		  #input size
 	dim = 2			 #input dimension
@@ -112,10 +112,10 @@ def main():
 		test_images -= test_images.mean()
 		
 #		size = train_images.shape[0]
-		size = 10000
-		numofiter = 100
+		size = 60000
+		numofiter = 1000
 		dim = 28**2
-		hiddenlayerlist = [[1024, 256, 64]]
+		hiddenlayerlist = [[1000]] # 2500, 2000, 1500, 1000, 500
 		output_unit = 10
 		
 		# get_one_hot(train_labels[: size, :], 10)
