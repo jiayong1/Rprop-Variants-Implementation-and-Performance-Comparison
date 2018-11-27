@@ -136,7 +136,7 @@ def main():
 		val_out_cls = np.argmax(val_out_softmax, axis=1)
 		
 		accuracy = sum(val_out_cls == val_lbls) / val_size
-		print('validation accuracy: ')
+		print('validation accuracy: ' + str(accuracy))
 		
 		tst_size = 10000
 		
@@ -148,8 +148,8 @@ def main():
 		tst_out_cls = np.argmax(tst_out_softmax, axis=1)
 		
 		accuracy = sum(tst_out_cls == tst_lbls) / tst_size
-		print('test accuracy: ' + accuracy)
-		set_trace()
+		print('test accuracy: ' + str(accuracy))
+#		set_trace()
 
 
 if __name__ == '__main__':
