@@ -22,7 +22,7 @@ def main():
 	hiddenlayerlist = [[16,32,16]]	#change the number of hidden layer, and nodes in the layer
 	
 	ss = 1e-2		   #step Size
-	numofiter = 1000   #iterations
+	numofiter = 3000   #iterations
 	size = 2500		  #input size
 	dim = 2			 #input dimension
 	margin = 0		  #change Margin at here, change this value to 0 to make the data not linear separable
@@ -30,7 +30,7 @@ def main():
 	output_unit = 1
 	
 	algorithm = input('Select algorithm: (input ebp, r+, r-, ir+ or ir-)')
-	algorithm = 'ebp'
+#	algorithm = 'ebp'
 	modeltype = input('Classification or Regression? (input c, r or mnist)')
 	modeltype = 'mnist'
 	
@@ -54,7 +54,7 @@ def main():
 			plt.scatter(inputdata[size // 2 :, 0],inputdata[size // 2 :, 1], color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 	
-		network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
+		network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [])
 		network.backpropagation()
 		output = network.forwardewithcomputedW(inputdata)
 	
@@ -83,7 +83,7 @@ def main():
 	elif modeltype == 'r':
 		#generate the input and output for regression
 		inputdata, outputdata = generatedataForRegression(size,dim)
-		network = net(inputdata, outputdata, size, ss, numofiter,dim, hiddenlayerlist, modeltype, output_unit)
+		network = net(inputdata, outputdata, size, ss, numofiter,dim, hiddenlayerlist, modeltype, output_unit, [])
 		network.backpropagation()
 		if dim == 2:
 			fig = plt.figure(figsize=(10,10))
@@ -113,16 +113,23 @@ def main():
 		
 #		size = train_images.shape[0]
 		size = 60000
-		numofiter = 5000
+		numofiter = 1000
 		dim = 28**2
 		hiddenlayerlist = [[1000]] # 2500, 2000, 1500, 1000, 500
 		output_unit = 10
 		
+		print('Algorithm: ' + algorithm + '\nModel type: ' + modeltype + '\nIterations: ' + str(numofiter))
+		
 		# get_one_hot(train_labels[: size, :], 10)
 		# train_labels[: size, :].flatten()
-		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit)
+		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [])
 #		set_trace()
 		network.backpropagation()
+		
+		# load the saved model
+		filename = 'wb_mnist_r-_0_1000.npz'
+		wb_ini = np.load(filename).tolist()
+		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini)
 		
 		# validate/test the accuracy
 		

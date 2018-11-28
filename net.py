@@ -7,7 +7,7 @@ from utils import ReluD, checkzero, sigmoid, sigmoidD, softmax, softmaxD
 from pdb import set_trace
 
 class net:
-	def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit):
+	def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini):
 		self.input = inputdata
 		self.output = outputdata
 		self.size = size
@@ -22,15 +22,18 @@ class net:
 		self.hiddenunits = hiddenlayerlist
 		self.output_unit = output_unit
 		
-		#randomly generate the weights and biases based on the layers and units
-		wb = []
-		wb.append(np.random.rand(dim + 1, self.hiddenunits[0][0]) * 2 - 1)
-		if (self.nd > 1):
-			for i in range(1,self.nd):
-				wb.append(np.random.rand(self.hiddenunits[0][i - 1] + 1, self.hiddenunits[0][i]) * 2 - 1)
-		
-		wb.append(np.random.rand(self.hiddenunits[0][-1] + 1, self.output_unit) * 2 - 1)
-		self.wb = wb
+		if wb_ini == []:
+			#randomly generate the weights and biases based on the layers and units
+			wb = []
+			wb.append(np.random.rand(dim + 1, self.hiddenunits[0][0]) * 2 - 1)
+			if (self.nd > 1):
+				for i in range(1,self.nd):
+					wb.append(np.random.rand(self.hiddenunits[0][i - 1] + 1, self.hiddenunits[0][i]) * 2 - 1)
+			
+			wb.append(np.random.rand(self.hiddenunits[0][-1] + 1, self.output_unit) * 2 - 1)
+			self.wb = wb
+		else:
+			self.wb = wb_ini
 	
 	#only forward to get the result
 	def forwardewithcomputedW(self, testx):
@@ -320,6 +323,8 @@ class net:
 			
 			if e % 100 == 0:
 				print('Epoch ' + str(e) + ' finished. Current loss: ' + str(self.loss[-1]))
+				filename = 'wb_' + self.modeltype + '_' + self.algorithm + '_' + str(e) + '_' + str(self.iter)
+				np.savez_compressed(filename, self.wb)
 			
 		
 		#plot the Loss
