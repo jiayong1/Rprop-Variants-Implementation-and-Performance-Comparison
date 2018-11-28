@@ -123,10 +123,10 @@ def main():
 		# get_one_hot(train_labels[: size, :], 10)
 		# train_labels[: size, :].flatten()
 		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [])
-#		network.backpropagation()
+		network.backpropagation()
 		
 		# load the saved model
-		filename = 'wb_mnist_r-_1000_1000.npz'
+		filename = 'wb_mnist_ir+_1000_1000.npz'
 		wb_ini = np.load(filename)['arr_0'].tolist()
 		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini)
 		
