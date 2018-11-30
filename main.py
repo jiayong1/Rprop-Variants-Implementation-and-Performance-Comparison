@@ -126,12 +126,11 @@ def main():
 		# get_one_hot(train_labels[: size, :], 10)
 		# train_labels[: size, :].flatten()
 		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [])
-#		set_trace()
 		network.backpropagation()
 		
 		# load the saved model
-		filename = 'wb_mnist_r-_0_1000.npz'
-		wb_ini = np.load(filename).tolist()
+		filename = 'wb_mnist_ir+_1000_1000.npz'
+		wb_ini = np.load(filename)['arr_0'].tolist()
 		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini)
 		
 		# validate/test the accuracy
@@ -167,8 +166,6 @@ def main():
 		data = np.float32(MinMaxscaler.fit_transform(data))
 		#Split Train and Test Data
 		trainD, testD , trainT, testT  = train_test_split(data, label, random_state=6)
-		print(np.shape(trainD))
-		print(np.shape(trainT))
 
 		size = np.shape(trainD)[0]
 		numofiter = 1000
@@ -180,8 +177,8 @@ def main():
 		network.backpropagation()
 		output = network.forwardewithcomputedW(testD)
 		accuracy = sum(output == np.reshape(testT, (len(testT),1))) / len(testT)
+		print('test accuracy: ' + str(accuracy))
 
-		print(accuracy)
 
 
 

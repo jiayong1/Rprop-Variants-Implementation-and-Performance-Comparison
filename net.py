@@ -321,9 +321,9 @@ class net:
 				########################## iRprop- algorithm end ##########################
 			
 			
-			if e % 100 == 0:
-				print('Epoch ' + str(e) + ' finished. Current loss: ' + str(self.loss[-1]))
-				filename = 'wb_' + self.modeltype + '_' + self.algorithm + '_' + str(e) + '_' + str(self.iter)
+			if e % 100 == 99:
+				print('Epoch ' + str(e + 1) + ' finished. Current loss: ' + str(self.loss[-1]))
+				filename = 'wb_' + self.modeltype + '_' + self.algorithm + '_' + str(e + 1) + '_' + str(self.iter)
 				np.savez_compressed(filename, self.wb)
 			
 		
