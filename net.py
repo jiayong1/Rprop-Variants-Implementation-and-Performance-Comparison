@@ -53,7 +53,7 @@ class net:
 		
 		a = np.append(a, ones, axis=1)
 		z = np.dot(a, self.wb[-1])
-		if self.modeltype == 'c':
+		if self.modeltype == 'c' or self.modeltype == "bc":
 			a = sigmoid(z)
 			a[a > 0.5] = 1
 			a[a <= 0.5] = 0
@@ -94,7 +94,7 @@ class net:
 			
 			zlist.append(z)
 			
-			if self.modeltype == 'c':
+			if self.modeltype == 'c' or self.modeltype == "bc":
 				a = sigmoid(z)
 				a = checkzero(a)
 				alist.append(a)

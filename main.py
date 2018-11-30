@@ -14,6 +14,9 @@ from utils import get_one_hot, softmax
 
 from pdb import set_trace
 
+import sklearn
+from sklearn.model_selection import train_test_split
+
 random.seed(0)
 
 
@@ -22,7 +25,7 @@ def main():
 	hiddenlayerlist = [[16,32,16]]	#change the number of hidden layer, and nodes in the layer
 	
 	ss = 1e-2		   #step Size
-	numofiter = 3000   #iterations
+	numofiter = 300   #iterations
 	size = 2500		  #input size
 	dim = 2			 #input dimension
 	margin = 0		  #change Margin at here, change this value to 0 to make the data not linear separable
@@ -30,9 +33,9 @@ def main():
 	output_unit = 1
 	
 	algorithm = input('Select algorithm: (input ebp, r+, r-, ir+ or ir-)')
-#	algorithm = 'ebp'
+	algorithm = 'ir+'
 	modeltype = input('Classification or Regression? (input c, r or mnist)')
-	modeltype = 'mnist'
+	modeltype = 'bc'
 	
 	
 	if modeltype == 'c':
@@ -157,6 +160,33 @@ def main():
 		accuracy = sum(tst_out_cls == tst_lbls) / tst_size
 		print('test accuracy: ' + str(accuracy))
 #		set_trace()
+	elif modeltype == 'bc':
+		data = np.genfromtxt("breastCancerData.csv", delimiter = ",")
+		label = np.genfromtxt("breastCancerLabels.csv", delimiter = ",")
+		MinMaxscaler = sklearn.preprocessing.MinMaxScaler()
+		data = np.float32(MinMaxscaler.fit_transform(data))
+		#Split Train and Test Data
+		trainD, testD , trainT, testT  = train_test_split(data, label, random_state=6)
+		print(np.shape(trainD))
+		print(np.shape(trainT))
+
+		size = np.shape(trainD)[0]
+		numofiter = 1000
+		dim = 9
+		hiddenlayerlist = [[80,100,50]] # 2500, 2000, 1500, 1000, 500
+		output_unit = 1
+		
+		network = net(trainD, np.reshape(trainT, (len(trainT),1)), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [])
+		network.backpropagation()
+		output = network.forwardewithcomputedW(testD)
+		accuracy = sum(output == np.reshape(testT, (len(testT),1))) / len(testT)
+
+		print(accuracy)
+
+
+
+
+
 
 
 if __name__ == '__main__':
