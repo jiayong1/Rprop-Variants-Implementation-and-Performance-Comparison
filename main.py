@@ -166,8 +166,6 @@ def main():
 		data = np.float32(MinMaxscaler.fit_transform(data))
 		#Split Train and Test Data
 		trainD, testD , trainT, testT  = train_test_split(data, label, random_state=6)
-		print(np.shape(trainD))
-		print(np.shape(trainT))
 
 		size = np.shape(trainD)[0]
 		numofiter = 1000
@@ -179,8 +177,8 @@ def main():
 		network.backpropagation()
 		output = network.forwardewithcomputedW(testD)
 		accuracy = sum(output == np.reshape(testT, (len(testT),1))) / len(testT)
+		print('test accuracy: ' + str(accuracy))
 
-		print(accuracy)
 
 
 
