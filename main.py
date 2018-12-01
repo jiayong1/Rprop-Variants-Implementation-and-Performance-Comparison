@@ -129,7 +129,7 @@ def main():
 		network.backpropagation()
 		
 		# load the saved model
-		filename = 'wb_mnist_ir+_1000_1000.npz'
+		filename = 'wb_' + modeltype + '_' + algorithm + '_' + numofiter + '_' + numofiter + '.npz'
 		wb_ini = np.load(filename)['arr_0'].tolist()
 		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini)
 		
