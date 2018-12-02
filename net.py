@@ -322,7 +322,20 @@ class net:
 			
 			
 			if e % 100 == 99:
-				print('Epoch ' + str(e + 1) + ' finished. Current loss: ' + str(self.loss[-1]))
+				
+				val_size = 1000
+				
+				val_imgs = self.input[: val_size]
+				val_lbls = self.output[: val_size]
+				val_lbls_cls = np.argmax(val_lbls, axis=1)
+				
+				val_out = self.forwardewithcomputedW(val_imgs)
+				val_out_cls = np.argmax(val_out, axis=1)
+				
+				accuracy = sum(val_out_cls == val_lbls_cls) / val_size
+				
+				print('Epoch ' + str(e + 1) + ' finished. Current loss: ' + str(self.loss[-1]) + '. Current validation accuracy: ' + str(accuracy) +'.')
+				
 				filename = 'wb_' + self.modeltype + '_' + self.algorithm + '_' + str(e + 1) + '_' + str(self.iter)
 				np.savez_compressed(filename, self.wb)
 			

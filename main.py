@@ -33,9 +33,9 @@ def main():
 	output_unit = 1
 	
 	algorithm = input('Select algorithm: (input ebp, r+, r-, ir+ or ir-)')
-	algorithm = 'ir+'
-	modeltype = input('Classification or Regression? (input c, r or mnist)')
-	modeltype = 'bc'
+	algorithm = 'r+'
+	modeltype = input('Classification or Regression? (input c, r, mnist or bc)')
+	modeltype = 'mnist'
 	
 	
 	if modeltype == 'c':
@@ -133,19 +133,7 @@ def main():
 		wb_ini = np.load(filename)['arr_0'].tolist()
 		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini)
 		
-		# validate/test the accuracy
-		
-		val_size = 1000
-		
-		val_imgs = train_images[: val_size]
-		val_lbls = train_labels[: val_size].flatten()
-		
-		val_out_raw = network.forwardewithcomputedW(val_imgs)
-		val_out_softmax = softmax(val_out_raw)
-		val_out_cls = np.argmax(val_out_softmax, axis=1)
-		
-		accuracy = sum(val_out_cls == val_lbls) / val_size
-		print('validation accuracy: ' + str(accuracy))
+		# test the accuracy
 		
 		tst_size = 10000
 		
@@ -153,12 +141,12 @@ def main():
 		tst_lbls = train_labels[: tst_size].flatten()
 		
 		tst_out_raw = network.forwardewithcomputedW(tst_imgs)
-		tst_out_softmax = softmax(tst_out_raw)
-		tst_out_cls = np.argmax(tst_out_softmax, axis=1)
+		tst_out_cls = np.argmax(tst_out_raw, axis=1)
 		
 		accuracy = sum(tst_out_cls == tst_lbls) / tst_size
 		print('test accuracy: ' + str(accuracy))
 #		set_trace()
+	
 	elif modeltype == 'bc':
 		data = np.genfromtxt("breastCancerData.csv", delimiter = ",")
 		label = np.genfromtxt("breastCancerLabels.csv", delimiter = ",")
@@ -177,7 +165,7 @@ def main():
 		network.backpropagation()
 		output = network.forwardewithcomputedW(testD)
 		accuracy = sum(output == np.reshape(testT, (len(testT),1))) / len(testT)
-		print('test accuracy: ' + str(accuracy))
+		print('test accuracy: ' + str(accuracy[0]))
 
 
 
