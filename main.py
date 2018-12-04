@@ -104,7 +104,7 @@ def main():
 		
 #		size = train_images.shape[0]
 		size = 60000
-		numofiter = 200
+		numofiter = 20
 		dim = 28**2
 		hiddenlayerlist = [[1000]] # 2500, 2000, 1500, 1000, 500
 		output_unit = 10
@@ -117,7 +117,7 @@ def main():
 		network.backpropagation()
 		
 		# load the saved model
-		filename = 'wb_' + modeltype + '_' + algorithm + '_' + str(numofiter) + '_' + str(numofiter) + '.npz'
+		filename = 'wb_' + modeltype + '_' + algorithm + '_' + str(numofiter) + '.npz'
 		wb_ini = np.load(filename)['arr_0'].tolist()
 		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini)
 		
