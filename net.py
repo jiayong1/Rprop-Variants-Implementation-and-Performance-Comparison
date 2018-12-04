@@ -27,13 +27,13 @@ class net:
 		if wb_ini == []:
 			#randomly generate the weights and biases based on the layers and units
 			wb = []
-			wb.append((np.random.rand(dim + 1, self.hiddenunits[0][0]) * 2 - 1) * 0.1)
+			wb.append(np.random.rand(dim + 1, self.hiddenunits[0][0]) * 2 - 1)
 			if (self.nd > 1):
 				for i in range(1,self.nd):
 					wb.append(np.random.rand(self.hiddenunits[0][i - 1] + 1, self.hiddenunits[0][i]) * 2 - 1)
 			
 			wb.append(np.random.rand(self.hiddenunits[0][-1] + 1, self.output_unit) * 2 - 1)
-			self.wb = wb
+			self.wb = wb * 0.1
 		else:
 			self.wb = wb_ini
 	
