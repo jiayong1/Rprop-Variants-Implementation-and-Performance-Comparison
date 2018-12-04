@@ -31,7 +31,7 @@ def main():
 	output_unit = 1
 	
 	algorithm = input('Select algorithm: (input ebp, r+, r-, ir+ or ir-)')
-	algorithm = 'r+'
+#	algorithm = 'r+'
 	modeltype = input('Classification or Regression? (input c, r, mnist or bc)')
 	modeltype = 'mnist'
 	
