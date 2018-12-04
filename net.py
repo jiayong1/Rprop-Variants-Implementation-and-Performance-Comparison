@@ -344,7 +344,7 @@ class net:
 		filename = self.modeltype + '_' + self.algorithm + '_' + str(self.iter)
 		np.savez_compressed('wb_' + filename, self.wb)
 		np.savez_compressed('loss_' + filename, self.loss)
-		np.savez_compressed('valaccu_' + filename, self.loss)
+		np.savez_compressed('valaccu_' + filename, self.val_accu)
 		
 		#plot the Loss
 		plt.figure(3)
