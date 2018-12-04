@@ -27,7 +27,7 @@ class net:
 		if wb_ini == []:
 			#randomly generate the weights and biases based on the layers and units
 			wb = []
-			wb.append(np.random.rand(dim + 1, self.hiddenunits[0][0]) * 2 - 1)
+			wb.append((np.random.rand(dim + 1, self.hiddenunits[0][0]) * 2 - 1) * 0.1)
 			if (self.nd > 1):
 				for i in range(1,self.nd):
 					wb.append(np.random.rand(self.hiddenunits[0][i - 1] + 1, self.hiddenunits[0][i]) * 2 - 1)
@@ -323,7 +323,7 @@ class net:
 				########################## iRprop- algorithm end ##########################
 			
 			
-			if e % 10 == 9:
+			if e % 1 == 0:
 				
 				val_size = 5000
 				val_idx = np.random.randint(0, high=self.input.shape[0], size=val_size)

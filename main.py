@@ -104,12 +104,14 @@ def main():
 		
 #		size = train_images.shape[0]
 		size = 60000
-		numofiter = 4000
+		numofiter = 1000
 		dim = 28**2
 		hiddenlayerlist = [[1000]] # 2500, 2000, 1500, 1000, 500
 		output_unit = 10
 		
-		print('Algorithm: ' + algorithm + '\nModel type: ' + modeltype + '\nIterations: ' + str(numofiter))
+		ss = 1e-1
+		
+		print('Algorithm: ' + algorithm + '\nModel type: ' + modeltype + '\nIterations: ' + str(numofiter) + '\nLearning rate: ' + str(ss))
 		
 		# get_one_hot(train_labels[: size, :], 10)
 		# train_labels[: size, :].flatten()
