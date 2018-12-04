@@ -54,7 +54,7 @@ def generatedata(size, dim, margin):
 	
 	return x, y
 
-def generatedataForRegression(size,dim):
+def generatedataForRegression(size, dim):
 	if dim == 1:
 		x =np.reshape(np.linspace(-math.pi, math.pi, num=size), (size, dim))
 	else:

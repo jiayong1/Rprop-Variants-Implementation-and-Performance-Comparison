@@ -146,7 +146,7 @@ def main():
 		size = np.shape(trainD)[0]
 		numofiter = 1000
 		dim = 9
-		hiddenlayerlist = [[80,100,50]] # 2500, 2000, 1500, 1000, 500
+		hiddenlayerlist = [[80,100,50]]
 		output_unit = 1
 		
 		network = net(trainD, np.reshape(trainT, (len(trainT),1)), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [])
