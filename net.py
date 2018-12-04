@@ -321,7 +321,7 @@ class net:
 				########################## iRprop- algorithm end ##########################
 			
 			
-			if e % 100 == 99:
+			if e % 10 == 9:
 				
 				val_size = 1000
 				
@@ -335,10 +335,12 @@ class net:
 				accuracy = sum(val_out_cls == val_lbls_cls) / val_size
 				
 				print('Epoch ' + str(e + 1) + ' finished. Current loss: ' + str(self.loss[-1]) + '. Current validation accuracy: ' + str(accuracy) +'.')
-				
-				filename = 'wb_' + self.modeltype + '_' + self.algorithm + '_' + str(e + 1) + '_' + str(self.iter)
-				np.savez_compressed(filename, self.wb)
-			
+		
+		
+		filename = self.modeltype + '_' + self.algorithm + '_' + str(self.iter)
+		np.savez_compressed('wb_' + filename, self.wb)
+		np.savez_compressed('loss_' + filename, self.loss)
+		np.savez_compressed('valaccu_' + filename, self.loss)
 		
 		#plot the Loss
 		plt.figure(3)
