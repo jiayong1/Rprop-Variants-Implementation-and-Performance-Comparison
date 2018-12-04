@@ -104,7 +104,7 @@ def main():
 		
 #		size = train_images.shape[0]
 		size = 60000
-		numofiter = 20
+		numofiter = 4000
 		dim = 28**2
 		hiddenlayerlist = [[1000]] # 2500, 2000, 1500, 1000, 500
 		output_unit = 10
