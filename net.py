@@ -22,6 +22,8 @@ class net:
 		self.hiddenunits = hiddenlayerlist
 		self.output_unit = output_unit
 		
+		self.val_accu = []
+		
 		if wb_ini == []:
 			#randomly generate the weights and biases based on the layers and units
 			wb = []
@@ -323,16 +325,18 @@ class net:
 			
 			if e % 10 == 9:
 				
-				val_size = 1000
-				
-				val_imgs = self.input[: val_size]
-				val_lbls = self.output[: val_size]
+				val_size = 5000
+				val_idx = np.random.randint(0, high=self.input.shape[0], size=val_size)
+#				set_trace()
+				val_imgs = self.input[val_idx]
+				val_lbls = self.output[val_idx]
 				val_lbls_cls = np.argmax(val_lbls, axis=1)
 				
 				val_out = self.forwardewithcomputedW(val_imgs)
 				val_out_cls = np.argmax(val_out, axis=1)
 				
 				accuracy = sum(val_out_cls == val_lbls_cls) / val_size
+				self.val_accu.append(accuracy)
 				
 				print('Epoch ' + str(e + 1) + ' finished. Current loss: ' + str(self.loss[-1]) + '. Current validation accuracy: ' + str(accuracy) +'.')
 		
