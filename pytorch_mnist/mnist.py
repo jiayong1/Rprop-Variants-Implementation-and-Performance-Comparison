@@ -41,6 +41,7 @@ class LogisticRegression(nn.Module):
 		return x
 
 opt = input('Select optimizer: (input bgd, sgd, r+, r-, ir+ or ir-)')
+opt = 'bgd'
 
 training_set = torch.utils.data.DataLoader(train_dataset, batch_size= len(train_dataset), shuffle=True)
 test_set = torch.utils.data.DataLoader(test_dataset, batch_size= len(test_dataset))
@@ -58,7 +59,7 @@ m = nn.LogSoftmax(dim=1)
 if opt == 'bgd':
 	training_set = torch.utils.data.DataLoader(train_dataset, batch_size=len(train_dataset), shuffle=True)
 	test_set = torch.utils.data.DataLoader(test_dataset, batch_size=len(test_dataset))
-	optimizer = torch.optim.SGD(model.parameters(), lr = 0.1)
+	optimizer = torch.optim.SGD(model.parameters(), lr = 5e-2)
 
 elif opt == 'sgd':
 	training_set = torch.utils.data.DataLoader(train_dataset, batch_size=100, shuffle=True)
@@ -78,16 +79,16 @@ n_epochs = 1000
 iteration_no = 0
 for epoch in range(n_epochs):
 	for i, (images, labels) in enumerate(training_set):
-
+		
 		#clear the previous gradient
 		optimizer.zero_grad()
-
+		
 		#Convert the images to a Tensor,for
 		#calculating gradient
 		#images.view creates 784dim column Tensor
 		images = Variable(images.view(-1, 784))
 		lables = Variable(labels)
-
+		
 		#forward pass
 		output = model(images)
 		#find the error/loss wrt true labels
@@ -97,11 +98,11 @@ for epoch in range(n_epochs):
 		#update the parameters
 		if (opt == 'ir+' and iteration_no > 0 and float(prev_loss) < float(loss)):
 			optimizer = Rprop(model.parameters(), lr = 0.001)
-
+		
 		optimizer.step()
 		iteration_no +=1
 		prev_loss = loss
-
+		
 		#testing - For checking the accuracy
 		if(iteration_no % 1 == 0):
 			correct = 0
