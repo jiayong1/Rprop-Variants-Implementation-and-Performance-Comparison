@@ -1,101 +1,88 @@
+import math
 import torch
-import torch.nn  as nn
-import torch.functional as F
-import torchvision.transforms as transforms
-import torchvision.datasets as dsets
-from torch.autograd import Variable
-from Rprop_minus import *
+from torch.optim.optimizer import Optimizer
 
-# There are many datasets available in torchvision,
-# one of them is MNIST, We have to convert it to
-# a tensor using torchvision.transforms
+class iRprop_plus(Optimizer):
+	"""Implements the resilient backpropagation algorithm.
 
-train_dataset = dsets.MNIST(root='./data', train=True, transform=transforms.ToTensor(), download=True)
-test_dataset = dsets.MNIST(root='./data', train=False,  transform=transforms.ToTensor(), download=True)
+	Arguments:
+		params (iterable): iterable of parameters to optimize or dicts defining
+			parameter groups
+		lr (float, optional): learning rate (default: 1e-2)
+		etas (Tuple[float, float], optional): pair of (etaminus, etaplis), that
+			are multiplicative increase and decrease factors
+			(default: (0.5, 1.2))
+		step_sizes (Tuple[float, float], optional): a pair of minimal and
+			maximal allowed step sizes (default: (1e-6, 50))
+	"""
 
-class LogisticRegression(nn.Module):
-	def __init__(self, input_dim, output_dim):
-		super(LogisticRegression, self).__init__()
-		#self.linear = nn.Linear(input_dim, output_dim)
-		""" three hidden layers"""
+	def __init__(self, params, lr=1e-2, etas=(0.5, 1.2), step_sizes=(1e-6, 50), back_track =False ):
+		if not 0.0 <= lr:
+			raise ValueError("Invalid learning rate: {}".format(lr))
+		if not 0.0 < etas[0] < 1.0 < etas[1]:
+			raise ValueError("Invalid eta values: {}, {}".format(etas[0], etas[1]))
+
+		defaults = dict(lr=lr, etas=etas, step_sizes=step_sizes, back_track = False)
+		super(iRprop_plus, self).__init__(params, defaults)
+
+	def step(self, closure=None):
+		"""Performs a single optimization step.
+
+		Arguments:
+			closure (callable, optional): A closure that reevaluates the model
+				and returns the loss.
 		"""
-		self.fc1 = nn.Linear(28 * 28, 500)
-		self.fc2 = nn.Linear(500, 200)
-		self.fc3 = nn.Linear(200, 10)
-		self.classifier = nn.Sequential(self.fc1, nn.ReLU(), self.fc2, nn.ReLU(), self.fc3)
+		loss = None
+		if closure is not None:
+			loss = closure()
 
-		#self.classifier = nn.Sequential(self.fc1, nn.ReLU(), self.fc2)
-		#self.classifier = nn.Linear(28*28, 10)
-		"""
-		self.fc1 = nn.Linear(28 * 28, 500)
-		self.fc2 = nn.Linear(500, 200)
-		self.fc3 = nn.Linear(200, 10)
-		self.classifier = nn.Sequential(self.fc1, nn.ReLU(), self.fc2, nn.ReLU(), self.fc3)
+		for group in self.param_groups:
+			for p in group['params']:
+				if p.grad is None:
+					continue
+				grad = p.grad.data
+				if grad.is_sparse:
+					raise RuntimeError('Rprop does not support sparse gradients')
+				state = self.state[p]
 
-	def forward(self, x):
-		x = self.classifier(x)
+				# State initialization
+				if len(state) == 0:
+					state['step'] = 0
+					state['prev'] = torch.zeros_like(p.data)
+					state['step_size'] = grad.new().resize_as_(grad).fill_(group['lr'])
+					state['prev_size'] = torch.zeros_like(p.data)
 
-		return x
+				etaminus, etaplus = group['etas']
+				step_size_min, step_size_max = group['step_sizes']
+				step_size = state['step_size']
+
+				state['step'] += 1
+
+				sign = grad.mul(state['prev']).sign()
+				sign[sign.gt(0)] = etaplus
+				sign[sign.lt(0)] = etaminus
+				sign[sign.eq(0)] = 1
+
+				# update stepsizes with step size updates
+				step_size.mul_(sign).clamp_(step_size_min, step_size_max)
+
+				# for dir<0, dfdx=0
+				# for dir>=0 dfdx=dfdx
+				grad = grad.clone()
+
+				if group['back_track'] == True:
+					# back-tracking
+					p.data[sign.eq(etaminus)] -= state['prev_size'][sign.eq(etaminus)]
+
+				grad[sign.eq(etaminus)] = 0
 
 
-#training_set = torch.utils.data.DataLoader(train_dataset, batch_size=100, shuffle=True)
-#test_set = torch.utils.data.DataLoader(test_dataset, batch_size=100)
-training_set = torch.utils.data.DataLoader(train_dataset, batch_size= len(train_dataset), shuffle=True)
-test_set = torch.utils.data.DataLoader(test_dataset, batch_size= len(test_dataset))
-
-input_dimensions = 784
-output_dimensions = 10
-model = LogisticRegression(input_dimensions, output_dimensions)
-# Declare a loss criteria
-criterion = nn.CrossEntropyLoss()
-# define a learning rate
-learning_rate = 0.001
-# declare a optimizer, SGD(stochastic gradient descent)
-
-#optimizer = torch.optim.SGD(model.parameters(), lr = learning_rate)
-#optimizer = torch.optim.RMSprop(model.parameters(), lr = 0.001)
-optimizer = Rprop_minus(model.parameters(), lr = 0.001)
 
 
-n_epochs = 50
-iteration_no = 0
-for epoch in range(n_epochs):
-   for i, (images, labels) in enumerate(training_set):
+				# update parameters
+				p.data.addcmul_(-1, grad.sign(), step_size)
 
-		#clear the previous gradient
-		optimizer.zero_grad()
+				state['prev'].copy_(grad)
+				state['prev_size'].copy_(step_size)
 
-		#Convert the images to a Tensor,for
-		#calculating gradient
-		#images.view creates 784dim column Tensor
-		images = Variable(images.view(-1, 784))
-		lables = Variable(labels)
-
-		#forward pass
-		output = model(images)
-		#find the error/loss wrt true labels
-		loss = criterion(output, labels)
-		#back-prop
-		loss.backward()
-		#update the parameters
-		if (iteration_no > 0 and float(prev_loss) < float(loss)):
-			optimizer = Rprop(model.parameters(), lr = 0.001)
-
-		optimizer.step()
-		iteration_no +=1
-		prev_loss = loss
-
-		#testing - For checking the accuracy
-		if(iteration_no%1 ==0):
-			correct = 0
-			total = 0
-			for (test_images, labels) in test_set:
-			  #same process as training
-				images = Variable(test_images.view(-1, 784))
-				labels = Variable(labels)
-				output = model(images)
-				_, predicted = torch.max(output.data, 1)
-				correct += (predicted == labels).sum()
-				total += labels.size(0)
-				accuracy = 100*correct/total
-			print(f' Iteration: {iteration_no}, loss: {loss}, accuracy ={accuracy}')
+		return loss
