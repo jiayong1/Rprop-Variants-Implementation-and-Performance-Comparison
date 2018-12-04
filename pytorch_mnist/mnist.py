@@ -49,7 +49,7 @@ input_dimensions = 784
 output_dimensions = 10
 model = LogisticRegression(input_dimensions, output_dimensions)
 # Declare a loss criteria
-criterion = nn.CrossEntropyLoss()
+criterion = nn.NLLLoss()
 # define a learning rate
 learning_rate = 0.0001
 
