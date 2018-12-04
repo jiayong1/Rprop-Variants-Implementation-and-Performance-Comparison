@@ -75,4 +75,17 @@ def generatedataForRegression(size,dim):
 	return x, y
 
 def get_mnist():
-	set_trace()
+	
+	train_images = mnist.train_images().reshape((-1, 28**2))
+	train_labels = mnist.train_labels().reshape((-1, 1))
+	
+	test_images = mnist.test_images().reshape((-1, 28**2))
+	test_labels = mnist.test_labels().reshape((-1, 1))
+	
+	train_images = train_images / (train_images.max() - train_images.min())
+	train_images -= train_images.mean()
+	
+	test_images = test_images / (test_images.max() - test_images.min())
+	test_images -= test_images.mean()
+	
+	return train_images, train_labels, test_images, test_labels

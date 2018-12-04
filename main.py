@@ -6,8 +6,6 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 #%matplotlib inline
 
-import mnist
-
 from net import net
 from data import generatedata, generatedataForRegression, get_mnist
 from utils import get_one_hot, softmax
@@ -101,18 +99,8 @@ def main():
 			ax.plot_surface(X, Y, outputy,rstride=1, cstride=1,cmap=cm.coolwarm, linewidth=0, antialiased=False)
 		
 	elif modeltype == 'mnist':
-#		get_mnist()
-		train_images = mnist.train_images().reshape((-1, 28**2))
-		train_labels = mnist.train_labels().reshape((-1, 1))
 		
-		test_images = mnist.test_images().reshape((-1, 28**2))
-		test_labels = mnist.test_labels().reshape((-1, 1))
-		
-		train_images = train_images / (train_images.max() - train_images.min())
-		train_images -= train_images.mean()
-#		set_trace()
-		test_images = test_images / (test_images.max() - test_images.min())
-		test_images -= test_images.mean()
+		train_images, train_labels, test_images, test_labels = get_mnist()
 		
 #		size = train_images.shape[0]
 		size = 60000
