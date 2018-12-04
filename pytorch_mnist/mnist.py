@@ -53,9 +53,11 @@ criterion = nn.NLLLoss()
 # define a learning rate
 learning_rate = 0.0001
 
+m = nn.LogSoftmax(dim=1)
+
 if opt == 'bgd':
-	training_set = torch.utils.data.DataLoader(train_dataset, batch_size=60000, shuffle=True)
-	test_set = torch.utils.data.DataLoader(test_dataset, batch_size=60000)
+	training_set = torch.utils.data.DataLoader(train_dataset, batch_size=len(train_dataset), shuffle=True)
+	test_set = torch.utils.data.DataLoader(test_dataset, batch_size=len(test_dataset))
 	optimizer = torch.optim.SGD(model.parameters(), lr = 0.1)
 
 elif opt == 'sgd':
@@ -89,7 +91,7 @@ for epoch in range(n_epochs):
 		#forward pass
 		output = model(images)
 		#find the error/loss wrt true labels
-		loss = criterion(output, labels)
+		loss = criterion(m(output), labels)
 		#back-prop
 		loss.backward()
 		#update the parameters
