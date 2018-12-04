@@ -7,10 +7,12 @@ from utils import ReluD, checkzero, sigmoid, sigmoidD, softmax, softmaxD
 from pdb import set_trace
 
 class net:
-	def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini):
-		self.input = inputdata
-		self.output = outputdata
-		self.size = size
+	def __init__(self, inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini, val_size):
+		self.val_size = val_size
+		
+		self.input = inputdata[self.val_size : ]
+		self.output = outputdata[self.val_size : ]
+		self.size = size - self.val_size
 		self.ss = ss
 		self.iter = numofiter
 		self.dim = dim
@@ -325,9 +327,9 @@ class net:
 			
 			if e % 1 == 0:
 				
-				val_size = 5000
-				val_idx = np.random.randint(0, high=self.input.shape[0], size=val_size)
+#				val_idx = np.random.randint(0, high=self.input.shape[0], size=self.val_size)
 #				set_trace()
+				val_idx = range(self.val_size)
 				val_imgs = self.input[val_idx]
 				val_lbls = self.output[val_idx]
 				val_lbls_cls = np.argmax(val_lbls, axis=1)
@@ -335,7 +337,7 @@ class net:
 				val_out = self.forwardewithcomputedW(val_imgs)
 				val_out_cls = np.argmax(val_out, axis=1)
 				
-				accuracy = sum(val_out_cls == val_lbls_cls) / val_size
+				accuracy = sum(val_out_cls == val_lbls_cls) / self.val_size
 				self.val_accu.append(accuracy)
 				
 				print('Epoch ' + str(e + 1) + ' finished. Current loss: ' + str(self.loss[-1]) + '. Current validation accuracy: ' + str(accuracy) +'.')

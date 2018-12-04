@@ -55,7 +55,7 @@ def main():
 			plt.scatter(inputdata[size // 2 :, 0],inputdata[size // 2 :, 1], color='b')
 			plt.legend(['Label 1', 'Label 0'], loc='upper right')
 	
-		network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [])
+		network = net(inputdata, outputdata, size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [], 0)
 		network.backpropagation()
 		output = network.forwardewithcomputedW(inputdata)
 	
@@ -84,7 +84,7 @@ def main():
 	elif modeltype == 'r':
 		#generate the input and output for regression
 		inputdata, outputdata = generatedataForRegression(size,dim)
-		network = net(inputdata, outputdata, size, ss, numofiter,dim, hiddenlayerlist, modeltype, output_unit, [])
+		network = net(inputdata, outputdata, size, ss, numofiter,dim, hiddenlayerlist, modeltype, output_unit, [], 0)
 		network.backpropagation()
 		if dim == 2:
 			fig = plt.figure(figsize=(10,10))
@@ -115,13 +115,13 @@ def main():
 		
 		# get_one_hot(train_labels[: size, :], 10)
 		# train_labels[: size, :].flatten()
-		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [])
+		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [], 5000)
 		network.backpropagation()
 		
 		# load the saved model
 		filename = 'wb_' + modeltype + '_' + algorithm + '_' + str(numofiter) + '.npz'
 		wb_ini = np.load(filename)['arr_0'].tolist()
-		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini)
+		network = net(train_images[: size, :], get_one_hot(train_labels[: size, :], 10), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, wb_ini, 0)
 		
 		# test the accuracy
 		
@@ -151,7 +151,7 @@ def main():
 		hiddenlayerlist = [[80,100,50]]
 		output_unit = 1
 		
-		network = net(trainD, np.reshape(trainT, (len(trainT),1)), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [])
+		network = net(trainD, np.reshape(trainT, (len(trainT),1)), size, ss, numofiter, dim, hiddenlayerlist, modeltype, algorithm, output_unit, [], 0)
 		network.backpropagation()
 		output = network.forwardewithcomputedW(testD)
 		accuracy = sum(output == np.reshape(testT, (len(testT),1))) / len(testT)
