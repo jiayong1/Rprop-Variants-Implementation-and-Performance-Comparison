@@ -8,12 +8,14 @@ from Rprop import *
 from Rprop_minus import *
 from iRprop_minus import *
 
+from pdb import set_trace
+
 # There are many datasets available in torchvision,
 # one of them is MNIST, We have to convert it to
 # a tensor using torchvision.transforms
 
-train_dataset = dsets.MNIST(root='./data', train=True, transform=transforms.ToTensor(), download=True)
-test_dataset = dsets.MNIST(root='./data', train=False,  transform=transforms.ToTensor(), download=True)
+train_dataset = dsets.MNIST(root='./data', train=True, transform=transforms.ToTensor())
+test_dataset = dsets.MNIST(root='./data', train=False,  transform=transforms.ToTensor())
 
 class LogisticRegression(nn.Module):
 	def __init__(self, input_dim, output_dim):
@@ -30,16 +32,15 @@ class LogisticRegression(nn.Module):
 		#self.classifier = nn.Linear(28*28, 10)
 		"""
 		self.fc1 = nn.Linear(28 * 28, 1000)
-		self.fc2 = nn.Linear(1000, 300)
-		self.fc3 = nn.Linear(300, 10)
-		self.classifier = nn.Sequential(self.fc1, nn.ReLU(), self.fc2, nn.ReLU(), self.fc3)
+		self.fc2 = nn.Linear(1000, 10)
+		self.classifier = nn.Sequential(self.fc1, nn.Sigmoid(), self.fc2)
 
 	def forward(self, x):
 		x = self.classifier(x)
 
 		return x
 
-opt = input('Select optimizer: (input sgd, r+, r-, ir+ or ir-)')
+opt = input('Select optimizer: (input bgd, sgd, r+, r-, ir+ or ir-)')
 
 training_set = torch.utils.data.DataLoader(train_dataset, batch_size= len(train_dataset), shuffle=True)
 test_set = torch.utils.data.DataLoader(test_dataset, batch_size= len(test_dataset))
@@ -52,7 +53,12 @@ criterion = nn.CrossEntropyLoss()
 # define a learning rate
 learning_rate = 0.0001
 
-if opt == 'sgd':
+if opt == 'bgd':
+	training_set = torch.utils.data.DataLoader(train_dataset, batch_size=60000, shuffle=True)
+	test_set = torch.utils.data.DataLoader(test_dataset, batch_size=60000)
+	optimizer = torch.optim.SGD(model.parameters(), lr = 0.1)
+
+elif opt == 'sgd':
 	training_set = torch.utils.data.DataLoader(train_dataset, batch_size=100, shuffle=True)
 	test_set = torch.utils.data.DataLoader(test_dataset, batch_size=100)
 	optimizer = torch.optim.SGD(model.parameters(), lr = 0.1)
@@ -69,7 +75,7 @@ elif opt == 'ir-':
 n_epochs = 50
 iteration_no = 0
 for epoch in range(n_epochs):
-   for i, (images, labels) in enumerate(training_set):
+	for i, (images, labels) in enumerate(training_set):
 
 		#clear the previous gradient
 		optimizer.zero_grad()
@@ -99,12 +105,12 @@ for epoch in range(n_epochs):
 			correct = 0
 			total = 0
 			for (test_images, labels) in test_set:
-			  #same process as training
+				#same process as training
 				images = Variable(test_images.view(-1, 784))
 				labels = Variable(labels)
 				output = model(images)
 				_, predicted = torch.max(output.data, 1)
 				correct += (predicted == labels).sum()
 				total += labels.size(0)
-				accuracy = 100*correct/total
+				accuracy = correct/total
 			print(f' Iteration: {iteration_no}, loss: {loss}, accuracy ={accuracy}')
