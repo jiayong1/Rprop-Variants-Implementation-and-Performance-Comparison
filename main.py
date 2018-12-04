@@ -109,7 +109,7 @@ def main():
 		hiddenlayerlist = [[1000]] # 2500, 2000, 1500, 1000, 500
 		output_unit = 10
 		
-		ss = 1e-1
+		ss = 5e-2
 		
 		print('Algorithm: ' + algorithm + '\nModel type: ' + modeltype + '\nIterations: ' + str(numofiter) + '\nLearning rate: ' + str(ss))
 		
