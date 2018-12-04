@@ -353,3 +353,5 @@ class net:
 		plt.title('Loss Plot')
 		plt.plot(range(1, self.iter + 1), self.loss)
 		plt.show()
+		
+		plt.savefig(filename + '.png')
