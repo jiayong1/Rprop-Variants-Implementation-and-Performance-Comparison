@@ -72,7 +72,7 @@ elif opt == 'ir-':
 
 
 
-n_epochs = 50
+n_epochs = 1000
 iteration_no = 0
 for epoch in range(n_epochs):
 	for i, (images, labels) in enumerate(training_set):
@@ -101,7 +101,7 @@ for epoch in range(n_epochs):
 		prev_loss = loss
 
 		#testing - For checking the accuracy
-		if(iteration_no%1 ==0):
+		if(iteration_no % 1 == 0):
 			correct = 0
 			total = 0
 			for (test_images, labels) in test_set:
@@ -112,5 +112,5 @@ for epoch in range(n_epochs):
 				_, predicted = torch.max(output.data, 1)
 				correct += (predicted == labels).sum()
 				total += labels.size(0)
-				accuracy = correct/total
-			print(f' Iteration: {iteration_no}, loss: {loss}, accuracy ={accuracy}')
+				accuracy = correct.item() / total
+			print(f'Iteration: {iteration_no}, loss: {loss}, accuracy: {accuracy}')
