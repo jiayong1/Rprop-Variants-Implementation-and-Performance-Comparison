@@ -8,10 +8,9 @@ Rprop Variants Performance Comparison
 
 ## Group Members
 
-Jiayong Lin (jiayong@cs.umd.edu)
+Jiayong Lin
 
-Bo He (bohe@cs.umd.edu)
+Bo He
 
-Junran Yang (jryang@terpmail.umd.edu)
+Junran Yang 
 
-Yixuan Ren (yxren@cs.umd.edu)
