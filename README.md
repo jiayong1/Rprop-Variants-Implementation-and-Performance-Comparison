@@ -1,16 +1,4 @@
-## Group Members
-
-Jiayong Lin
-
-Yixuan Ren
-
-Bo He
-
-Junran Yang 
-
-## Topic
-
-Rprop Variants Implementation and Performance Comparison
+# Rprop Variants Implementation and Performance Comparison
 
 ## Abstract
 
