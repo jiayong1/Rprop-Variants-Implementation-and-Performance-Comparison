@@ -1,5 +1,3 @@
-# CMSC727-Project
-
 ## Group Members
 
 Jiayong Lin
